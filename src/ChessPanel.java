@@ -21,11 +21,18 @@ public class ChessPanel extends JLayeredPane{
             setLayout(new GridLayout(8,8));
             setSize(new java.awt.Dimension(800, 800));
             setOpaque(false);
-            for (int j = 0; j<8;j++){
-                for (int i = 0; i<8;i++){
-                    PiecePanel test = new PiecePanel(0,0,Piece.NONE);
-                test.setSize(new Dimension(100,100));
-                add(test);
+            for (int rank = 1; rank<9;rank++){
+                for (int file = 1; file<9;file++){
+                    if (file % 2 == 0){
+                    PiecePanel test = new PiecePanel(rank,file,Piece.BLACK | Piece.ROOK);
+                    test.setSize(new Dimension(100,100));
+                    add(test);
+                    } else {
+                        PiecePanel test = new PiecePanel(rank,file,Piece.WHITE | Piece.KNIGHT);
+                        test.setSize(new Dimension(100,100));
+                        add(test);
+                    } 
+                  
                 }
             }
         }
