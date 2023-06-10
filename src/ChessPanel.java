@@ -1,54 +1,35 @@
 package src;
+
+import java.awt.Dimension;
+import java.awt.GridLayout;
+
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-public class ChessPanel extends JPanel{
-    private int boardPixelSize = 900;
-    private int squarePixelSize = 100;
+public class ChessPanel extends JLayeredPane{
     public ChessPanel(){
-        setPreferredSize(new java.awt.Dimension(boardPixelSize, boardPixelSize));
+        setPreferredSize(new java.awt.Dimension(900, 900));
+        BackgroundPanel background = new BackgroundPanel();
+        add(background, JLayeredPane.DEFAULT_LAYER);
+        TopPanel piece = new TopPanel();
+        add(piece, JLayeredPane.PALETTE_LAYER);
+        piece.setLocation(0,0);
+        
     }
-
-    /** <p> Draws ChessPanel. </p>
-     *  @param g Graphics object to draw on.
-     */
-    public void paintComponent(Graphics g){
-        super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        drawBoard(g2);
-      
-}
-
-    /** <p> Draws Chess Board Background </p>
-     * @param g2 Graphics2D object to draw on.
-     */
-    public void drawBoard(Graphics2D g){
-        //Draw the Board Background (checkered squares)
-        for (int rank = 0; rank<8; rank++){
-            for (int file = 0; file<8; file++){
-                if ((rank+file)%2==0){
-                    g.setColor(java.awt.Color.WHITE);
+    private class TopPanel extends JPanel{
+        public TopPanel(){
+            setLayout(new GridLayout(8,8));
+            setSize(new java.awt.Dimension(800, 800));
+            setOpaque(false);
+            for (int j = 0; j<8;j++){
+                for (int i = 0; i<8;i++){
+                    PiecePanel test = new PiecePanel(0,0,Piece.NONE);
+                test.setSize(new Dimension(100,100));
+                add(test);
                 }
-                else{
-                    g.setColor(java.awt.Color.BLACK);
-                }
-                g.fillRect(rank*squarePixelSize, file*squarePixelSize, squarePixelSize, squarePixelSize);
             }
         }
-        //Draw the Rank and File Labels
-        g.setColor(java.awt.Color.BLACK);
-        //Draw the Files Labels
-        for (int file = 0; file<8; file++){
-            Rectangle rect = new Rectangle(file*squarePixelSize, 8*squarePixelSize, squarePixelSize, squarePixelSize);
-            Helper.drawCenteredString(g, Character.toString((char)('a'+file)), rect, new Font("TimesRoman", Font.PLAIN, 50));
-        }
-        //Draw the rank labels
-        for (int rank = 0; rank<8; rank++){
-            Rectangle rect = new Rectangle(8*squarePixelSize, rank*squarePixelSize, squarePixelSize, squarePixelSize);
-            Helper.drawCenteredString(g, Character.toString((char)('8'-rank)), rect, new Font("TimesRoman", Font.PLAIN, 50));
-        }
+    
     }
+    
 }

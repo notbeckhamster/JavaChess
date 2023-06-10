@@ -4,6 +4,9 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+
 public class Helper {
     /** <p>
  * Draw a String centered in the middle of a Rectangle.
@@ -32,5 +35,9 @@ public static void drawCenteredString(Graphics g, String text, Rectangle rect, F
     g.setFont(font);
     // Draw the String
     g.drawString(text, x, y);
+}
+public static ImageIcon getImageIcon(String imagePath) {
+    ImageIcon icon = new ImageIcon(imagePath);
+    return icon;
 }
 }
