@@ -25,6 +25,11 @@ public class PiecePanel extends JPanel{
        setOpaque(false);
         
     }
+    public void setPiece(int piece){
+        this.piece = piece;
+        ImageIcon icon = loadIcon();
+        jLabelPiece.setIcon(icon);
+    }
     public ImageIcon loadIcon(){
         if (piece == Piece.NONE){
             return null;
@@ -60,7 +65,7 @@ public class PiecePanel extends JPanel{
         else {
             sb.append("l");
         }
-        sb.append("t45.png");
+        sb.append("t90.png");
         System.out.println(sb.toString());
         ImageIcon icon = Helper.getImageIcon(sb.toString());
         return icon;

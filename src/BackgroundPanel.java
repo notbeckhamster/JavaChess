@@ -2,6 +2,7 @@ package src;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -33,10 +34,10 @@ public class BackgroundPanel extends JPanel{
         for (int rank = 0; rank<8; rank++){
             for (int file = 0; file<8; file++){
                 if ((rank+file)%2==0){
-                    g.setColor(java.awt.Color.WHITE);
+                    g.setColor(new Color(240, 217, 181));
                 }
                 else{
-                    g.setColor(java.awt.Color.BLACK);
+                    g.setColor(new Color(181, 136, 99));
                 }
                 g.fillRect(rank*squarePixelSize, file*squarePixelSize, squarePixelSize, squarePixelSize);
             }
