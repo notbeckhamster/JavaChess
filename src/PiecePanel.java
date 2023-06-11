@@ -25,6 +25,12 @@ public class PiecePanel extends JPanel{
        setOpaque(false);
         
     }
+    public int getRank(){
+        return rank;
+    }
+    public int getFile(){
+        return file;
+    }
     public void setPiece(int piece){
         this.piece = piece;
         ImageIcon icon = loadIcon();
@@ -66,11 +72,13 @@ public class PiecePanel extends JPanel{
             sb.append("l");
         }
         sb.append("t90.png");
-        System.out.println(sb.toString());
         ImageIcon icon = Helper.getImageIcon(sb.toString());
         return icon;
     }
     public JLabel getJLabelPiece(){
         return jLabelPiece;
+    }
+    public int getPiece(){
+        return piece;
     }
 }
