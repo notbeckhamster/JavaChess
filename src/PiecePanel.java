@@ -13,6 +13,7 @@ public class PiecePanel extends JPanel{
     private int file;
     private JLabel jLabelPiece = null;
     private int piece;
+    private boolean highlight = false;
 
     public PiecePanel(int rank, int file, int piece){  
         this.rank = rank;
@@ -80,5 +81,20 @@ public class PiecePanel extends JPanel{
     }
     public int getPiece(){
         return piece;
+    }
+    public void setHighlight(boolean highlight){
+        if (highlight){
+            setBackground(Color.LIGHT_GRAY);
+            highlight = true;
+            setOpaque(true);
+        }
+        else{
+            setBackground(null);
+            highlight=false;
+            setOpaque(false);
+        }
+    }
+    public boolean getHighlight(){
+        return highlight;
     }
 }
