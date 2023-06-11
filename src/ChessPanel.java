@@ -73,10 +73,15 @@ public class ChessPanel extends JLayeredPane {
         }
 
         public void mouseReleased(MouseEvent e) {
+            // If out of bounds, return the piece to the original square
             if (e.getPoint().x > 800 || e.getPoint().y > 800 || e.getPoint().x < 0 || e.getPoint().y < 0) {
                 returnPiece();
                 getMainLayeredPane().revalidate();
                 getMainLayeredPane().repaint();
+                return;
+            }
+            //If no piece selected return dont do anything
+            if (oldPiece == Piece.NONE) {
                 return;
             }
             PiecePanel selectedPanel = (PiecePanel) piecePanel.getComponentAt(e.getPoint());
