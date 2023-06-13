@@ -94,6 +94,12 @@ public class Board {
     public Collection<Move> validMoves(int rank, int file, int piece){
         if (isSlidingPiece(piece) == true){
             return generateSlidingMoves(rank, file, piece);
+        } else if ((piece & Piece.PIECE_MASK) == Piece.KNIGHT){
+           // return generateKnightMoves(rank, file, piece);
+        } else if ((piece & Piece.PIECE_MASK) == Piece.PAWN){
+            return generatePawnMoves(rank, file, piece);
+        } else if ((piece & Piece.PIECE_MASK )== Piece.KING){
+            //return generateKingMoves(rank, file, piece);
         }
         ArrayList<Move> result = new ArrayList<Move>();
         for (int i = 0; i<64; i++){
@@ -108,6 +114,53 @@ public class Board {
             return true;
         }
         return false;
+    }
+    public boolean isOnBoard(int idx){
+        if (idx >= 0 && idx < 64){
+            return true;
+        }
+        return false;
+    }
+    public Collection<Move> generatePawnMoves(int rank, int file, int piece){
+        ArrayList<Move> moves = new ArrayList<Move>();
+        int currIdx = 8*rank +file;
+        int direction = 0;
+        //Set the direction based on color
+        if (Piece.isColor(piece, Piece.WHITE)){
+            direction = dirToCompassRoseDirHM.get("nort");
+        } else {
+            direction = dirToCompassRoseDirHM.get("sout");
+        }
+
+        //Add the forward move if empty
+        int idxOneMoveForward = currIdx + direction;
+        if (isOnBoard(idxOneMoveForward) == true && board[idxOneMoveForward] == Piece.NONE ){
+            moves.add(new Move(currIdx, idxOneMoveForward));
+        }
+
+        //Add the starting two move forward if on starting rank
+        boolean ifOnStartingRank = (rank == 1 && Piece.isColor(piece, Piece.WHITE)) || (rank == 6 && Piece.isColor(piece, Piece.BLACK));
+        if (ifOnStartingRank == true){
+            int idxTwoMoveForward = currIdx + 2*direction;
+            if (board[idxTwoMoveForward] == Piece.NONE && board[idxOneMoveForward] == Piece.NONE){
+                moves.add(new Move(currIdx, idxTwoMoveForward));
+            }
+        }
+
+        //Add the diagonal moves if there is an enemy piece
+        int[] diagonalDirections = {Piece.isColor(piece, Piece.WHITE) ? dirToCompassRoseDirHM.get("noWe") : dirToCompassRoseDirHM.get("soWe"), Piece.isColor(piece, Piece.WHITE) ? dirToCompassRoseDirHM.get("noEa") : dirToCompassRoseDirHM.get("soEa")};
+        int leftCaptureSqr = currIdx+diagonalDirections[0];
+        int rightCaptureSqr = currIdx+diagonalDirections[1];
+        //Check captures are moves on the board
+  
+        if (isOnBoard(leftCaptureSqr) && board[leftCaptureSqr] != Piece.NONE && Piece.isColor(piece, board[leftCaptureSqr] & Piece.COLOR_MASK) == false){
+            moves.add(new Move(currIdx, leftCaptureSqr));
+        }
+        if (isOnBoard(rightCaptureSqr) && board[rightCaptureSqr] != Piece.NONE && Piece.isColor(piece, board[rightCaptureSqr] & Piece.COLOR_MASK) == false){
+            moves.add(new Move(currIdx, rightCaptureSqr));
+        }
+        return moves;
+
     }
 
     public Collection<Move> generateSlidingMoves(int rank, int file, int piece){
