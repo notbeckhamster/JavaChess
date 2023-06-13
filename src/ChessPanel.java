@@ -1,20 +1,17 @@
 package src;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
-import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 public class ChessPanel extends JLayeredPane {
     protected TopPanel piecePanel;
-    private PiecePanel[] piecePanels = new PiecePanel[64];
-
+    private Board board = new Board();
+  
     public ChessPanel() {
         setPreferredSize(new java.awt.Dimension(900, 900));
         BackgroundPanel background = new BackgroundPanel();
@@ -81,19 +78,32 @@ public class ChessPanel extends JLayeredPane {
                 return;
             }
             //If no piece selected return dont do anything
-            if (oldPiece == Piece.NONE) {
+            if ((oldPiece & Piece.PIECE_MASK) == Piece.NONE) {
+                selectedPiece = null;
                 return;
             }
             PiecePanel selectedPanel = (PiecePanel) piecePanel.getComponentAt(e.getPoint());
             // Check if moving into square empty or occupied by enemy
             if (selectedPanel.getPiece() == Piece.NONE
                     || Piece.isColor(oldPiece, selectedPanel.getPiece() & Piece.COLOR_MASK) == false) {
+
+
+                //Check if valid move
+                Move move = new Move(oldRank*8 +oldFile, selectedPanel.getRank()*8 + selectedPanel.getFile());
+                if (!board.validMoves(oldRank, oldFile, oldPiece).contains(move)) {
+                    returnPiece();
+                    
+                }else {
                 // Move the piece to the new square
                 selectedPanel.setPiece(oldPiece);
+                
+                // Make move to board 
+                board.makeMove(oldRank, oldFile, selectedPanel.getRank(), selectedPanel.getFile());
                 //Set highlights and remove old highlights
                 highlightSquares(selectedPanel);
                 remove(selectedPiece);
-                selectedPiece = null;
+         
+                }
 
             } else {
                 // Reset the piece to the old square
@@ -108,7 +118,7 @@ public class ChessPanel extends JLayeredPane {
         }
 
         private void returnPiece() {
-            piecePanels[oldRank * 8 + oldFile].setPiece(oldPiece);
+            piecePanel.getPiecePanels()[oldRank * 8 + oldFile].setPiece(oldPiece);
             remove(selectedPiece);
             selectedPiece = null;
         }
@@ -122,66 +132,15 @@ public class ChessPanel extends JLayeredPane {
                 }
                 //Add new highlights
                 selectedPanel.setHighlight(true);
-                piecePanels[oldRank * 8 + oldFile].setHighlight(true);
+                piecePanel.getPiecePanels()[oldRank * 8 + oldFile].setHighlight(true);
                 //Save the highlights
                 newMoveHighLight = selectedPanel;
-                oldMoveHighLight = piecePanels[oldRank * 8 + oldFile];
+                oldMoveHighLight = piecePanel.getPiecePanels()[oldRank * 8 + oldFile];
 
         }
 
     }
 
-    private class TopPanel extends JPanel {
-        public TopPanel() {
-            setLayout(new GridLayout(8, 8));
-            setSize(new java.awt.Dimension(800, 800));
-            setOpaque(false);
-            PiecePanel[][] tempPiecePanels = new PiecePanel[8][8];
-            // Add the panels to the board
-            for (int rank = 7; rank >= 0; rank--) {
-                for (int file = 0; file < 8; file++) {
-
-                    PiecePanel test = new PiecePanel(rank, file, Piece.NONE);
-                    tempPiecePanels[rank][file] = test;
-                    test.setSize(new Dimension(100, 100));
-                    add(test);
-
-                }
-            }
-            // Add the panels to the PiecePanel array
-            int count = 0;
-            for (int rank = 0; rank < 8; rank++) {
-                for (int file = 0; file < 8; file++) {
-                    piecePanels[count] = tempPiecePanels[rank][file];
-                    count++;
-                }
-            }
-
-            piecePanels[56].setPiece(Piece.BLACK | Piece.ROOK);
-            piecePanels[57].setPiece(Piece.BLACK | Piece.KNIGHT);
-            piecePanels[58].setPiece(Piece.BLACK | Piece.BISHOP);
-            piecePanels[59].setPiece(Piece.BLACK | Piece.QUEEN);
-            piecePanels[60].setPiece(Piece.BLACK | Piece.KING);
-            piecePanels[61].setPiece(Piece.BLACK | Piece.BISHOP);
-            piecePanels[62].setPiece(Piece.BLACK | Piece.KNIGHT);
-            piecePanels[63].setPiece(Piece.BLACK | Piece.ROOK);
-            for (int i = 48; i < 56; i++) {
-                piecePanels[i].setPiece(Piece.BLACK | Piece.PAWN);
-            }
-            piecePanels[0].setPiece(Piece.WHITE | Piece.ROOK);
-            piecePanels[1].setPiece(Piece.WHITE | Piece.KNIGHT);
-            piecePanels[2].setPiece(Piece.WHITE | Piece.BISHOP);
-            piecePanels[3].setPiece(Piece.WHITE | Piece.QUEEN);
-            piecePanels[4].setPiece(Piece.WHITE | Piece.KING);
-            piecePanels[5].setPiece(Piece.WHITE | Piece.BISHOP);
-            piecePanels[6].setPiece(Piece.WHITE | Piece.KNIGHT);
-            piecePanels[7].setPiece(Piece.WHITE | Piece.ROOK);
-            for (int i = 8; i < 16; i++) {
-                piecePanels[i].setPiece(Piece.WHITE | Piece.PAWN);
-            }
-
-        }
-
-    }
+   
 
 }

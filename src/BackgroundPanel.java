@@ -1,5 +1,4 @@
 package src;
-import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
 import java.awt.Color;
@@ -10,7 +9,7 @@ import java.awt.Rectangle;
 public class BackgroundPanel extends JPanel{
     private int boardPixelSize = 900;
     private int squarePixelSize = 100;
-    private JLayeredPane layeredPane;
+    
     public BackgroundPanel(){
         
         setSize(new java.awt.Dimension(boardPixelSize, boardPixelSize));

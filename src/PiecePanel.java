@@ -1,6 +1,5 @@
 package src;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridBagLayout;
 
 import javax.swing.ImageIcon;
@@ -14,7 +13,7 @@ public class PiecePanel extends JPanel{
     private JLabel jLabelPiece = null;
     private int piece;
     private boolean highlight = false;
-
+   
     public PiecePanel(int rank, int file, int piece){  
         this.rank = rank;
         this.file = file;
@@ -24,6 +23,7 @@ public class PiecePanel extends JPanel{
         setLayout(new GridBagLayout());
         add(jLabelPiece);
        setOpaque(false);
+    
         
     }
     public int getRank(){
@@ -32,6 +32,7 @@ public class PiecePanel extends JPanel{
     public int getFile(){
         return file;
     }
+ 
     public void setPiece(int piece){
         this.piece = piece;
         ImageIcon icon = loadIcon();
