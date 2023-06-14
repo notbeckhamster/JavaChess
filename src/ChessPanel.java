@@ -3,6 +3,7 @@ package src;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -34,8 +35,8 @@ public class ChessPanel extends JLayeredPane {
         int oldRank = -1;
         int oldFile = -1;
         int oldPiece = Piece.NONE;
-        PiecePanel newMoveHighLight = null;
-        PiecePanel oldMoveHighLight = null;
+        ArrayList<PiecePanel> hightlights = new ArrayList<PiecePanel>();
+        ArrayList<PiecePanel> validMoves = new ArrayList<PiecePanel>();
 
         public void mousePressed(MouseEvent e) {
 
@@ -48,12 +49,16 @@ public class ChessPanel extends JLayeredPane {
                 selectedPiece = selectedPanel.getJLabelPiece();
                 selectedPiece = new JLabel(selectedPiece.getIcon(), SwingConstants.CENTER);
                 selectedPiece.setSize(new Dimension(100, 100));
+                highlightValidMoves(selectedPanel);
                 selectedPanel.setPiece(Piece.NONE);
                 int centerX = e.getPoint().x - selectedPiece.getWidth() / 2;
                 int centerY = e.getPoint().y - selectedPiece.getHeight() / 2;
                 selectedPiece.setLocation(centerX, centerY);
                 add(selectedPiece, JLayeredPane.DRAG_LAYER);
+              
+                
             }
+            resetHighlights();
             getMainLayeredPane().revalidate();
             getMainLayeredPane().repaint();
         }
@@ -95,11 +100,12 @@ public class ChessPanel extends JLayeredPane {
                     
                 }else {
                 // Move the piece to the new square
-                selectedPanel.setPiece(oldPiece);
+                selectedPanel.setPiece(oldPiece);   
                 
                 // Make move to board 
                 board.makeMove(oldRank, oldFile, selectedPanel.getRank(), selectedPanel.getFile());
                 //Set highlights and remove old highlights
+                
                 highlightSquares(selectedPanel);
                 remove(selectedPiece);
          
@@ -113,6 +119,7 @@ public class ChessPanel extends JLayeredPane {
 
             // Move the piece to the new square
             selectedPiece = null;
+            resetValidMoves();
             getMainLayeredPane().revalidate();
             getMainLayeredPane().repaint();
         }
@@ -124,20 +131,39 @@ public class ChessPanel extends JLayeredPane {
         }
         private void highlightSquares(PiecePanel selectedPanel){
                 
-                //Remove old highlights
-                if (newMoveHighLight != null) {
-                    newMoveHighLight.setHighlight(false);
-                    
-                    oldMoveHighLight.setHighlight(false);
-                }
+                
                 //Add new highlights
+                hightlights.add(selectedPanel);
                 selectedPanel.setHighlight(true);
+                hightlights.add(piecePanel.getPiecePanels()[oldRank * 8 + oldFile]);
                 piecePanel.getPiecePanels()[oldRank * 8 + oldFile].setHighlight(true);
-                //Save the highlights
-                newMoveHighLight = selectedPanel;
-                oldMoveHighLight = piecePanel.getPiecePanels()[oldRank * 8 + oldFile];
+
 
         }
+
+        private void highlightValidMoves(PiecePanel selectedPanel){
+             for (Move move : board.validMoves(oldRank, oldFile, selectedPanel.getPiece())){
+                    validMoves.add(piecePanel.getPiecePanels()[move.getNewSqr()]);
+                    piecePanel.getPiecePanels()[move.getNewSqr()].setDisplayValidMoves(true);
+                }
+                
+           
+
+    }
+    private void resetValidMoves(){
+        for (PiecePanel panel : validMoves){
+            panel.setDisplayValidMoves(false);
+        }
+        
+   
+
+}
+        private void resetHighlights(){
+            for (PiecePanel highlightedPanel : hightlights){
+                highlightedPanel.setHighlight(false);
+            }
+
+    }
 
     }
 

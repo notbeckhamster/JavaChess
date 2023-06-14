@@ -1,5 +1,8 @@
 package src;
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 
 import javax.swing.ImageIcon;
@@ -13,6 +16,7 @@ public class PiecePanel extends JPanel{
     private JLabel jLabelPiece = null;
     private int piece;
     private boolean highlight = false;
+    private boolean ifDisplayValidMoves = false;
    
     public PiecePanel(int rank, int file, int piece){  
         this.rank = rank;
@@ -85,7 +89,7 @@ public class PiecePanel extends JPanel{
     }
     public void setHighlight(boolean highlight){
         if (highlight){
-            setBackground(Color.LIGHT_GRAY);
+            setBackground(Color.BLACK);
             highlight = true;
             setOpaque(true);
         }
@@ -93,6 +97,17 @@ public class PiecePanel extends JPanel{
             setBackground(null);
             highlight=false;
             setOpaque(false);
+        }
+    }
+    public void setDisplayValidMoves(boolean ifDisplayValidMoves){
+        this.ifDisplayValidMoves = ifDisplayValidMoves;
+    }
+    public void paintComponent(Graphics g){
+        if (ifDisplayValidMoves){
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setStroke(new BasicStroke(10));
+        g2.setColor(Color.GRAY);
+        g2.drawOval(10,10,80,80);
         }
     }
     public boolean getHighlight(){
