@@ -99,7 +99,7 @@ public class Board {
         } else if ((piece & Piece.PIECE_MASK) == Piece.PAWN){
             return generatePawnMoves(rank, file, piece);
         } else if ((piece & Piece.PIECE_MASK )== Piece.KING){
-            //return generateKingMoves(rank, file, piece);
+            return generateKingMoves(rank, file, piece);
         }
         ArrayList<Move> result = new ArrayList<Move>();
         for (int i = 0; i<64; i++){
@@ -194,6 +194,40 @@ public class Board {
 
             
         }
+        return moves;
+    }
+
+    public Collection<Move> generateKingMoves(int rank, int file, int piece){
+        ArrayList<Move> moves = new ArrayList<Move>();
+
+        //for each direction piece can move find the valid moves
+        for (String eachDirection : dirToCompassRoseDirHM.keySet()) {
+       
+            int direction = dirToCompassRoseDirHM.get(eachDirection);
+            int currIdx = 8*rank+file;
+            int oldIdx = currIdx;
+
+            
+          
+                currIdx+=direction;
+                //If the move is not dont consider it
+                if (isOnBoard(currIdx) == false) continue;
+                
+                boolean ifNewSqrDifColor = (board[currIdx] & Piece.COLOR_MASK) != (piece & Piece.COLOR_MASK);
+                boolean ifNewSqrEmpty = board[currIdx] == Piece.NONE;
+                if (ifNewSqrEmpty == true){
+                      moves.add(new Move(oldIdx, currIdx));
+                      
+                } else if (ifNewSqrDifColor == true){
+                    moves.add(new Move(oldIdx, currIdx));
+                }
+              
+
+
+            }
+
+            
+        
         return moves;
     }
 
