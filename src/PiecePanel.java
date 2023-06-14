@@ -89,7 +89,7 @@ public class PiecePanel extends JPanel{
     }
     public void setHighlight(boolean highlight){
         if (highlight){
-            setBackground(Color.BLACK);
+            setBackground(Color.LIGHT_GRAY);
             highlight = true;
             setOpaque(true);
         }
@@ -103,6 +103,7 @@ public class PiecePanel extends JPanel{
         this.ifDisplayValidMoves = ifDisplayValidMoves;
     }
     public void paintComponent(Graphics g){
+        super.paintComponent(g);
         if (ifDisplayValidMoves){
         Graphics2D g2 = (Graphics2D) g;
         g2.setStroke(new BasicStroke(10));
