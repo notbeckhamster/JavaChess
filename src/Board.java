@@ -95,16 +95,14 @@ public class Board {
         if (isSlidingPiece(piece) == true){
             return generateSlidingMoves(rank, file, piece);
         } else if ((piece & Piece.PIECE_MASK) == Piece.KNIGHT){
-           // return generateKnightMoves(rank, file, piece);
+            return generateKnightMoves(rank, file, piece);
         } else if ((piece & Piece.PIECE_MASK) == Piece.PAWN){
             return generatePawnMoves(rank, file, piece);
         } else if ((piece & Piece.PIECE_MASK )== Piece.KING){
             return generateKingMoves(rank, file, piece);
         }
+        //incase you ask for valid moves of a empty piece...
         ArrayList<Move> result = new ArrayList<Move>();
-        for (int i = 0; i<64; i++){
-            result.add(new Move(rank*8+file, i));
-        }
         return result;
     }
 
@@ -197,6 +195,46 @@ public class Board {
         return moves;
     }
 
+    public Collection<Move> generateKnightMoves(int rank, int file, int piece){
+        ArrayList<Move> moves = new ArrayList<Move>();
+        //generate directions piece can move
+        ArrayList<Integer> directionsPieceCanMove = new ArrayList<Integer>();
+        int noEa = dirToCompassRoseDirHM.get("noEa");
+        int noWe = dirToCompassRoseDirHM.get("noWe");
+        int soEa = dirToCompassRoseDirHM.get("soEa");
+        int soWe = dirToCompassRoseDirHM.get("soWe");
+        directionsPieceCanMove.add(noEa+dirToCompassRoseDirHM.get("nort"));
+        directionsPieceCanMove.add(noEa+dirToCompassRoseDirHM.get("east"));
+        directionsPieceCanMove.add(noWe+dirToCompassRoseDirHM.get("nort"));
+        directionsPieceCanMove.add(noWe+dirToCompassRoseDirHM.get("west"));
+        directionsPieceCanMove.add(soEa+dirToCompassRoseDirHM.get("sout"));
+        directionsPieceCanMove.add(soEa+dirToCompassRoseDirHM.get("east"));
+        directionsPieceCanMove.add(soWe+dirToCompassRoseDirHM.get("sout"));
+        directionsPieceCanMove.add(soWe+dirToCompassRoseDirHM.get("west"));
+
+        //for each direction piece can move find the valid moves
+        for (int direction : directionsPieceCanMove) {
+            int currIdx = 8*rank+file;
+            int oldIdx = currIdx;
+
+            
+          
+                currIdx+=direction;
+                //If the move is not dont consider it
+                if (isOnBoard(currIdx) == false) continue;
+
+                boolean ifNewSqrDifColor = (board[currIdx] & Piece.COLOR_MASK) != (piece & Piece.COLOR_MASK);
+                boolean ifNewSqrEmpty = board[currIdx] == Piece.NONE;
+                if (ifNewSqrEmpty == true){
+                      moves.add(new Move(oldIdx, currIdx));
+                      
+                } else if (ifNewSqrDifColor == true){
+                    moves.add(new Move(oldIdx, currIdx));
+                }
+
+    }
+    return moves;
+}
     public Collection<Move> generateKingMoves(int rank, int file, int piece){
         ArrayList<Move> moves = new ArrayList<Move>();
 
@@ -212,7 +250,7 @@ public class Board {
                 currIdx+=direction;
                 //If the move is not dont consider it
                 if (isOnBoard(currIdx) == false) continue;
-                
+
                 boolean ifNewSqrDifColor = (board[currIdx] & Piece.COLOR_MASK) != (piece & Piece.COLOR_MASK);
                 boolean ifNewSqrEmpty = board[currIdx] == Piece.NONE;
                 if (ifNewSqrEmpty == true){
@@ -255,9 +293,10 @@ public class Board {
             directions.add("soEa");
             directions.add("east");
             directions.add("noEa");
-        }
+        } 
     return directions;
     }
 
+  
 
 }
