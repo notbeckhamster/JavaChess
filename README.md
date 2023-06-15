@@ -6,7 +6,7 @@ My motivations for such a project was to get used to bit operators which I haven
 Licensed under [MIT](https://github.com/notbeckhamster/JavaChess/blob/main/LICENSE)
 
 
-[Download the latest JAR file](https://nightly.link/notbeckhamster/JavaChess/actions/artifacts/750893197.zip)
+[Download the latest JAR file](https://nightly.link/notbeckhamster/JavaChess/workflows/ant/main/JavaApp.zip)
 
 Assuming you do have Java Runtime installed (I am using Java 17)
 Extract Zip file and ensure you are in the JavaApp folder then run the following: java -jar JavaChess
