@@ -28,7 +28,7 @@ jobs:
         cp -r src/images/ dist/images/
         
     - name: Create JAR artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: JavaApp
         path: dist/
