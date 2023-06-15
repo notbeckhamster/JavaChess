@@ -17,6 +17,7 @@ public class Board {
     private int[] noEaNumToEdge = new int[64];
     private int[] soWeNumToEdge = new int[64];
     private int[] soEaNumToEdge = new int[64];
+    private ArrayList<Move> registeredMoves = new ArrayList<Move>();
     public Board(){
         initBoard();
     }
@@ -83,11 +84,12 @@ public class Board {
 
         }
 
-    public void makeMove(int oldRank, int oldFile, int newRank, int newFile){
-        int oldIdx = 8*oldRank+oldFile;
-        int newIdx = 8*newRank+newFile;
+    public void makeMove(Move move){
+        int oldIdx = move.getOldSqr();
+        int newIdx = move.getNewSqr();
         board[newIdx] = board[oldIdx];
         board[oldIdx] = Piece.NONE;
+        registeredMoves.add(move);
     
     }
     
@@ -146,15 +148,18 @@ public class Board {
         }
 
         //Add the diagonal moves if there is an enemy piece
-        int[] diagonalDirections = {Piece.isColor(piece, Piece.WHITE) ? dirToCompassRoseDirHM.get("noWe") : dirToCompassRoseDirHM.get("soWe"), Piece.isColor(piece, Piece.WHITE) ? dirToCompassRoseDirHM.get("noEa") : dirToCompassRoseDirHM.get("soEa")};
-        int leftCaptureSqr = currIdx+diagonalDirections[0];
-        int rightCaptureSqr = currIdx+diagonalDirections[1];
+        String leftDirectionKey = Piece.isColor(piece, Piece.WHITE) ? "noWe" : "soWe";
+        String rightDirectionKey = Piece.isColor(piece, Piece.WHITE) ? "noEa" : "soEa";
+
+        int leftCaptureSqr = currIdx+dirToCompassRoseDirHM.get(leftDirectionKey);
+        int rightCaptureSqr = currIdx+dirToCompassRoseDirHM.get(rightDirectionKey);
         //Check captures are moves on the board
-  
-        if (isOnBoard(leftCaptureSqr) && board[leftCaptureSqr] != Piece.NONE && Piece.isColor(piece, board[leftCaptureSqr] & Piece.COLOR_MASK) == false){
+        int numToEdgeLeft = dirToNumToEdgeHM.get(leftDirectionKey)[8*rank+file];
+        int numToEdgeRight = dirToNumToEdgeHM.get(rightDirectionKey)[8*rank+file];
+        if (isOnBoard(leftCaptureSqr) && numToEdgeLeft > 0 && board[leftCaptureSqr] != Piece.NONE && Piece.isColor(piece, board[leftCaptureSqr] & Piece.COLOR_MASK) == false){
             moves.add(new Move(currIdx, leftCaptureSqr));
         }
-        if (isOnBoard(rightCaptureSqr) && board[rightCaptureSqr] != Piece.NONE && Piece.isColor(piece, board[rightCaptureSqr] & Piece.COLOR_MASK) == false){
+        if (isOnBoard(rightCaptureSqr) && numToEdgeRight > 0 && board[rightCaptureSqr] != Piece.NONE && Piece.isColor(piece, board[rightCaptureSqr] & Piece.COLOR_MASK) == false){
             moves.add(new Move(currIdx, rightCaptureSqr));
         }
         return moves;

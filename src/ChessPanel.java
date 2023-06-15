@@ -103,7 +103,7 @@ public class ChessPanel extends JLayeredPane {
                 selectedPanel.setPiece(oldPiece);   
                 
                 // Make move to board 
-                board.makeMove(oldRank, oldFile, selectedPanel.getRank(), selectedPanel.getFile());
+                board.makeMove(move);
                 //Set highlights and remove old highlights
                 
                 highlightSquares(selectedPanel);
