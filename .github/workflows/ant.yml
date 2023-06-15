@@ -31,10 +31,3 @@ jobs:
         name: JavaApp
         path: dist/
 
-  - name: Get latest artifact ID
-      id: get_latest_artifact
-      run: echo "::set-output name=artifact_id::${{ github.run_id }}"
-
-    - name: Update Readme with latest artifact link
-      run: |
-        sed -i 's|latest-artifact-link|https://github.com/notbeckhamster/JavaChess/actions/runs/${{ github.run_id }}/artifacts/JavaApp|g' README.md
