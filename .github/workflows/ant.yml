@@ -37,4 +37,4 @@ jobs:
 
     - name: Update Readme with latest artifact link
       run: |
-        sed -i 's|latest-artifact-link|https://github.com/username/repository/actions/artifacts/${{ steps.get_latest_artifact.outputs.artifact_id }}|g' README.md
+        sed -i 's|latest-artifact-link|https://github.com/notbeckhamster/JavaChess/actions/runs/${{ github.run_id }}/artifacts/JavaApp|g' README.md
