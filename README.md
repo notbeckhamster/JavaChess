@@ -1,7 +1,7 @@
 # JavaChess
 
 My attempts at coding up a working Chess GUI and AI.
-My motivations for such a project was to get used to bit operators which I haven't gotten familar with and becuase I like being terrible at chess.
+My motivations for such a project was to get used to bit operators which I haven't gotten familar but have seen in some of my uni projects, also that I wanted to get some CI running on github as I only have used Gitlabs CI before for uni projects.
 
 Licensed under [MIT](https://github.com/notbeckhamster/JavaChess/blob/main/LICENSE)
 
@@ -10,6 +10,7 @@ Licensed under [MIT](https://github.com/notbeckhamster/JavaChess/blob/main/LICEN
 
 Assuming you do have Java Runtime installed (I am using Java 17)
 Extract Zip file and ensure you are in the JavaApp folder then run the following: java -jar JavaChess
+
 ## References
 * Chess Programming Wiki for guidance in terms of logic. https://www.chessprogramming.org/Main_Page
 * Sebastian Lague Coding Adventures: Chess for some inspiration with regards to the general direction and drew my attention since I haven't really tried using the Bit operators. 

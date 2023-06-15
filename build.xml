@@ -5,7 +5,7 @@
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="jar.dir"     value="${build.dir}/jar"/>
     <property name="main-class"  value="src.ChessFrame"/>
-    <property name="image.dir"   value="images"/>
+    <property name="image.dir"   value="${src.dir}/images"/>
 
 <path id="classpath">
     <fileset dir="${lib}">
@@ -22,7 +22,7 @@
         <javac srcdir="${src.dir}" destdir="${classes.dir}"/>
     </target>
 
-  <target name="jar" depends="compile">
+<target name="jar" depends="compile">
     <mkdir dir="${jar.dir}"/>
     <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
         <manifest>
@@ -31,6 +31,7 @@
         <fileset dir="${image.dir}" includes="**/*"/>
     </jar>
 </target>
+
 
     <target name="run" depends="jar">
         <java jar="${jar.dir}/${ant.project.name}.jar" fork="true"/>
