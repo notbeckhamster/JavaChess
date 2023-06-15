@@ -35,7 +35,7 @@ public static void drawCenteredString(Graphics g, String text, Rectangle rect, F
     g.drawString(text, x, y);
 }
 public static ImageIcon getImageIcon(String imagePath) {
-    ImageIcon icon = new ImageIcon(Helper.class.getResource(imagePath));
+    ImageIcon icon = new ImageIcon(imagePath);
     return icon;
 }
 }
