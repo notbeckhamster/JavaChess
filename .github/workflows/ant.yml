@@ -25,7 +25,7 @@ jobs:
         ant -noinput -buildfile build.xml
         mkdir -p dist
         cp build/jar/JavaChess.jar dist/
-        cp -r images/ dist/
+        cp -R images/. dist/images/
     - name: Create JAR artifact
       uses: actions/upload-artifact@v2
       with:
