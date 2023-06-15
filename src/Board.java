@@ -220,6 +220,18 @@ public class Board {
             
           
                 currIdx+=direction;
+                //Decomp the currIdx into new Rank and new File
+                int newRank = currIdx/8;
+                int newFile = currIdx%8;
+                //If knight on the right side of the board and the new move
+                //is on the left break out
+                if (file >=6 && newFile <= 1){
+                    continue;
+                //if knight on the left side of the board and the new move is
+                //on the right break out
+                } else if (file <= 1 && newFile >=6){
+                    continue;
+                }
                 //If the move is not dont consider it
                 if (isOnBoard(currIdx) == false) continue;
 
