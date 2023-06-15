@@ -46,7 +46,7 @@ public class PiecePanel extends JPanel{
             return null;
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("src/images/Chess_");
+        sb.append("images/Chess_");
         
         
         switch (piece & 0b00111){
