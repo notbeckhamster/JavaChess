@@ -68,4 +68,6 @@ public class TopPanel extends JPanel {
     public PiecePanel[] getPiecePanels(){
         return piecePanels;
     }
+
+ 
 }

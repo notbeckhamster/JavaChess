@@ -18,7 +18,9 @@ public class Board {
     private int[] soWeNumToEdge = new int[64];
     private int[] soEaNumToEdge = new int[64];
     private ArrayList<Move> registeredMoves = new ArrayList<Move>();
+    private TopPanel piecePanel;
     public Board(){
+    
         initBoard();
     }
     public void initBoard(){
@@ -90,7 +92,24 @@ public class Board {
         board[newIdx] = board[oldIdx];
         board[oldIdx] = Piece.NONE;
         registeredMoves.add(move);
+        if ((move.getPieceMoved() & Piece.PIECE_MASK) == Piece.PAWN) checkPawnPromotion(move);
     
+    }
+    public void setPiecePanel(TopPanel piecePanel){
+        this.piecePanel = piecePanel;
+    }
+    public void checkPawnPromotion(Move move){
+        //check if pawn is on last rank
+        int newIdx = move.getNewSqr();
+        int piece = board[newIdx];
+            int rank = newIdx / 8;
+            if (rank == 0 || rank == 7){
+                //pawn is on last rank
+                //promote pawn to queen
+                board[newIdx] = piece | Piece.QUEEN;
+                piecePanel.getPiecePanels()[newIdx].setPiece(Piece.QUEEN | (piece & Piece.COLOR_MASK));
+            }
+        
     }
     
     public Collection<Move> validMoves(int rank, int file, int piece){
@@ -135,7 +154,7 @@ public class Board {
         //Add the forward move if empty
         int idxOneMoveForward = currIdx + direction;
         if (isOnBoard(idxOneMoveForward) == true && board[idxOneMoveForward] == Piece.NONE ){
-            moves.add(new Move(currIdx, idxOneMoveForward));
+            moves.add(new Move(currIdx, idxOneMoveForward, piece));
         }
 
         //Add the starting two move forward if on starting rank
@@ -143,7 +162,7 @@ public class Board {
         if (ifOnStartingRank == true){
             int idxTwoMoveForward = currIdx + 2*direction;
             if (board[idxTwoMoveForward] == Piece.NONE && board[idxOneMoveForward] == Piece.NONE){
-                moves.add(new Move(currIdx, idxTwoMoveForward));
+                moves.add(new Move(currIdx, idxTwoMoveForward, piece));
             }
         }
 
@@ -157,10 +176,10 @@ public class Board {
         int numToEdgeLeft = dirToNumToEdgeHM.get(leftDirectionKey)[8*rank+file];
         int numToEdgeRight = dirToNumToEdgeHM.get(rightDirectionKey)[8*rank+file];
         if (isOnBoard(leftCaptureSqr) && numToEdgeLeft > 0 && board[leftCaptureSqr] != Piece.NONE && Piece.isColor(piece, board[leftCaptureSqr] & Piece.COLOR_MASK) == false){
-            moves.add(new Move(currIdx, leftCaptureSqr));
+            moves.add(new Move(currIdx, leftCaptureSqr, piece));
         }
         if (isOnBoard(rightCaptureSqr) && numToEdgeRight > 0 && board[rightCaptureSqr] != Piece.NONE && Piece.isColor(piece, board[rightCaptureSqr] & Piece.COLOR_MASK) == false){
-            moves.add(new Move(currIdx, rightCaptureSqr));
+            moves.add(new Move(currIdx, rightCaptureSqr, piece));
         }
         return moves;
 
@@ -182,10 +201,10 @@ public class Board {
                 boolean ifNewSqrDifColor = (board[currIdx] & Piece.COLOR_MASK) != (piece & Piece.COLOR_MASK);
                 boolean ifNewSqrEmpty = board[currIdx] == Piece.NONE;
                 if (ifNewSqrEmpty == true){
-                      moves.add(new Move(oldIdx, currIdx));
+                      moves.add(new Move(oldIdx, currIdx, piece));
                       
                 } else if (ifNewSqrDifColor == true){
-                    moves.add(new Move(oldIdx, currIdx));
+                    moves.add(new Move(oldIdx, currIdx, piece));
                     break;
                 } else {
                     break;
@@ -243,10 +262,10 @@ public class Board {
                 boolean ifNewSqrDifColor = (board[currIdx] & Piece.COLOR_MASK) != (piece & Piece.COLOR_MASK);
                 boolean ifNewSqrEmpty = board[currIdx] == Piece.NONE;
                 if (ifNewSqrEmpty == true){
-                      moves.add(new Move(oldIdx, currIdx));
+                      moves.add(new Move(oldIdx, currIdx, piece));
                       
                 } else if (ifNewSqrDifColor == true){
-                    moves.add(new Move(oldIdx, currIdx));
+                    moves.add(new Move(oldIdx, currIdx, piece));
                 }
 
     }
@@ -271,10 +290,10 @@ public class Board {
                 boolean ifNewSqrDifColor = (board[currIdx] & Piece.COLOR_MASK) != (piece & Piece.COLOR_MASK);
                 boolean ifNewSqrEmpty = board[currIdx] == Piece.NONE;
                 if (ifNewSqrEmpty == true){
-                      moves.add(new Move(oldIdx, currIdx));
+                      moves.add(new Move(oldIdx, currIdx, piece));
                       
                 } else if (ifNewSqrDifColor == true){
-                    moves.add(new Move(oldIdx, currIdx));
+                    moves.add(new Move(oldIdx, currIdx, piece));
                 }
               
 

@@ -18,6 +18,7 @@ public class ChessPanel extends JLayeredPane {
         BackgroundPanel background = new BackgroundPanel();
         add(background, JLayeredPane.DEFAULT_LAYER);
         piecePanel = new TopPanel();
+        board.setPiecePanel(piecePanel);
         add(piecePanel, JLayeredPane.PALETTE_LAYER);
         piecePanel.setLocation(0, 0);
         MyMouseAdapter myMouseAdapter = new MyMouseAdapter();
@@ -94,7 +95,7 @@ public class ChessPanel extends JLayeredPane {
 
 
                 //Check if valid move
-                Move move = new Move(oldRank*8 +oldFile, selectedPanel.getRank()*8 + selectedPanel.getFile());
+                Move move = new Move(oldRank*8 +oldFile, selectedPanel.getRank()*8 + selectedPanel.getFile(), oldPiece);
                 if (!board.validMoves(oldRank, oldFile, oldPiece).contains(move)) {
                     returnPiece();
                     
