@@ -11,8 +11,23 @@ public class Piece {
    
     public final static int WHITE = 8;
     public final static int BLACK = 16;
-    public final static int COLOR_MASK = 0b11000;
-    public final static int PIECE_MASK = 0b00111;
+    public final static int COLOR_MASK = 0b011000;
+    public final static int PIECE_MASK = 0b000111;
+    public final static int MOVED_MASK = 0b100000;
+    public final static int MOVED = 32;
+
+    public static void setMoved(int piece, boolean ifMoved){
+        if(ifMoved){
+            piece |= MOVED;
+         } else{
+            piece &= ~MOVED;
+         }
+        
+    }
+
+    public static boolean ifMoved(int piece){
+        return (piece & MOVED_MASK) == MOVED;
+    }
     public static boolean isColor(int piece, int color){
         //Checks if color part is equal to color
         return (piece & COLOR_MASK) == color;

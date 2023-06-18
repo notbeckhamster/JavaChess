@@ -38,7 +38,7 @@ public class ChessPanel extends JLayeredPane {
         int oldPiece = Piece.NONE;
         ArrayList<PiecePanel> hightlights = new ArrayList<PiecePanel>();
         ArrayList<PiecePanel> validMoves = new ArrayList<PiecePanel>();
-
+        ArrayList<PiecePanel> attackedHighlights = new ArrayList<PiecePanel>();
         public void mousePressed(MouseEvent e) {
 
             if (selectedPiece == null) {
@@ -51,6 +51,7 @@ public class ChessPanel extends JLayeredPane {
                 selectedPiece = new JLabel(selectedPiece.getIcon(), SwingConstants.CENTER);
                 selectedPiece.setSize(new Dimension(100, 100));
                 highlightValidMoves(selectedPanel);
+                highlightAttackedSquares(selectedPanel);
                 selectedPanel.setPiece(Piece.NONE);
                 int centerX = e.getPoint().x - selectedPiece.getWidth() / 2;
                 int centerY = e.getPoint().y - selectedPiece.getHeight() / 2;
@@ -76,6 +77,7 @@ public class ChessPanel extends JLayeredPane {
         }
 
         public void mouseReleased(MouseEvent e) {
+            resetAttackHighlights();
             // If out of bounds, return the piece to the original square
             if (e.getPoint().x > 800 || e.getPoint().y > 800 || e.getPoint().x < 0 || e.getPoint().y < 0) {
                 returnPiece();
@@ -151,6 +153,20 @@ public class ChessPanel extends JLayeredPane {
            
 
     }
+
+      private void highlightAttackedSquares(PiecePanel selectedPanel){
+            boolean[] attackedSquares = board.getAttackedSquares();
+             for (int i = 0 ; i< attackedSquares.length; i++){
+                if (attackedSquares[i] == true){  
+                    PiecePanel panel = piecePanel.getPiecePanels()[i];
+                    attackedHighlights.add(panel);
+                    panel.setDisplayAttackedSquares(true);
+                }
+            }
+                
+           
+
+    }
     private void resetValidMoves(){
         for (PiecePanel panel : validMoves){
             panel.setDisplayValidMoves(false);
@@ -162,6 +178,12 @@ public class ChessPanel extends JLayeredPane {
         private void resetHighlights(){
             for (PiecePanel highlightedPanel : hightlights){
                 highlightedPanel.setHighlight(false);
+            }
+
+    }
+    private void resetAttackHighlights(){
+            for (PiecePanel highlightedPanel : attackedHighlights){
+                highlightedPanel.setDisplayAttackedSquares(false);
             }
 
     }

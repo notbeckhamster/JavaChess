@@ -16,7 +16,7 @@ public class PiecePanel extends JPanel{
     private int piece;
     private boolean highlight = false;
     private boolean ifDisplayValidMoves = false;
-   
+    private boolean ifDisplayAttacked = false;
     public PiecePanel(int rank, int file, int piece){  
         this.rank = rank;
         this.file = file;
@@ -101,14 +101,24 @@ public class PiecePanel extends JPanel{
     public void setDisplayValidMoves(boolean ifDisplayValidMoves){
         this.ifDisplayValidMoves = ifDisplayValidMoves;
     }
+    public void setDisplayAttackedSquares(boolean ifDisplayAttackedSquares){
+         this.ifDisplayAttacked = ifDisplayAttackedSquares;
+    }
     public void paintComponent(Graphics g){
         super.paintComponent(g);
+        if (ifDisplayAttacked){
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setStroke(new BasicStroke(10));
+            g2.setColor(Color.RED);
+            g2.drawRect(10,10,80,80);
+        }
         if (ifDisplayValidMoves){
         Graphics2D g2 = (Graphics2D) g;
         g2.setStroke(new BasicStroke(10));
         g2.setColor(Color.GRAY);
         g2.drawOval(10,10,80,80);
         }
+        
     }
     public boolean getHighlight(){
         return highlight;
