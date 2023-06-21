@@ -18,7 +18,7 @@ If that doesn't work navigate to the actions tab and scroll down to artifacts an
 * Sebastian Lague Coding Adventures: Chess for some inspiration with regards to the general direction and drew my attention since I haven't really tried using the Bit operators. 
 https://www.youtube.com/watch?v=U4ogK0MIzqk
 * Stack Over flow [answer](https://stackoverflow.com/a/4687759) from Hovercraft Full Of Eels. Which I referenced for the JLayeredPane idea, and the Drag and Drop logic.
-* Board representation is the Little-Endian Rank-File Mapping (link)[https://www.chessprogramming.org/Square_Mapping_Considerations] which implies the following compass rose and board representation:
+* Board representation is the Little-Endian Rank-File Mapping [link](https://www.chessprogramming.org/Square_Mapping_Considerations) which implies the following compass rose and board representation:
 
 ![compass rose](readmeImages/compassRose.png)
 

@@ -519,11 +519,11 @@ public class Board {
             int direction = dirToCompassRoseDirHM.get(eachDirection);
             int newIdx = currIdx+direction;
             // If the move is not dont consider it
-            if (isOnBoard(currIdx) == false)
+            if (isOnBoard(newIdx) == false)
                 continue;
 
-            boolean ifNewSqrDifColor = (board[currIdx] & Piece.COLOR_MASK) != (piece & Piece.COLOR_MASK);
-            boolean ifNewSqrEmpty = board[currIdx] == Piece.NONE;
+            boolean ifNewSqrDifColor = (board[newIdx] & Piece.COLOR_MASK) != (piece & Piece.COLOR_MASK);
+            boolean ifNewSqrEmpty = board[newIdx] == Piece.NONE;
             if (ifNewSqrEmpty == true) {
                 moves.add(new Move(currIdx, newIdx, piece, Piece.NONE, Move.NORMAL));
 
