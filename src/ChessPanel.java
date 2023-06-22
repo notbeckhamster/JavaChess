@@ -113,6 +113,11 @@ public class ChessPanel extends JLayeredPane {
                 selectedPiece = null;
                 return;
             }
+             int turn = (isWhiteTurn ? Piece.WHITE : Piece.BLACK);
+                int colorSelected = (oldPiece & Piece.COLOR_MASK);
+                if (turn != colorSelected) {
+                    return;
+                }
             PiecePanel selectedPanel = (PiecePanel) piecePanel.getComponentAt(e.getPoint());
             // Check if moving into square empty or occupied by enemy
             if (selectedPanel.getPiece() == Piece.NONE
