@@ -116,13 +116,10 @@ public class ChessPanel extends JLayeredPane {
                     returnPiece();
                     
                 }else {
-                // Move the piece to the new square
-                selectedPanel.setPiece(oldPiece);   
                 
                 // Make move to board 
-                board.makeMove(move);
-                //Set highlights and remove old highlights
-                
+                board.makeMove(move, true);
+                //Set highlights and remove old highlights    
                 highlightSquares(selectedPanel);
                 remove(selectedPiece);
         

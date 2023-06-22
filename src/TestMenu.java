@@ -31,7 +31,7 @@ public class TestMenu{
         }
         public void actionPerformed(ActionEvent e){
             Board board =  ChessFrame.getChessPanel().getBoard();
-            board.unmakeMove(board.getRegisteredMoves().get(board.getRegisteredMoves().size()-1));
+            board.unmakeMove(board.getRegisteredMoves().get(board.getRegisteredMoves().size()-1), true);
             ChessFrame.getChessPanel().getTopPanel().updateForTesting();
             ChessFrame.getChessPanel().revalidate();
             ChessFrame.getChessPanel().repaint();

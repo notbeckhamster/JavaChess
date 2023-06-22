@@ -161,24 +161,29 @@ public class Board {
         setAttackedSquares(Piece.BLACK);
 
     }
-    public void makeMove(Move move) {
+   
+    public void makeMove(Move move, boolean ifUpdateGUI) {
 
         int oldIdx = move.getOldSqr();
         int newIdx = move.getNewSqr();
-        int capturedPieceIfAny = board[newIdx];
-        board[newIdx] = board[oldIdx];
+        board[newIdx] = move.getPieceMoved();
         Piece.setMoved(board[newIdx], true);
         board[oldIdx] = Piece.NONE;
     
         if ((move.getPieceMoved() & Piece.PIECE_MASK) == Piece.PAWN)
-            checkPawnPromotionAndEnPassant(move, capturedPieceIfAny);
+            checkPawnPromotionAndEnPassant(move, move.getPiecesAtNewSquare());
         registeredMoves.add(move);
+        // Move the piece to the new square
+        if (ifUpdateGUI){
+                  piecePanel.getPiecePanels()[newIdx].setPiece(move.getPieceMoved());
+        }
+                
         updatePieceList();
         //Update white to move
         whiteToMove = !whiteToMove;
     }
      
-    public void unmakeMove(Move move) {
+    public void unmakeMove(Move move, boolean ifUpdateGUI) {
         //First reverse the piece at newSqr to oldSqr, bring back the piece at new Sqr if any
         int oldIdx = move.getOldSqr();
         int newIdx = move.getNewSqr();
@@ -186,8 +191,13 @@ public class Board {
         board[newIdx] = move.getPiecesAtNewSquare();
     
     
-      //  if ((move.getPieceMoved() & Piece.PIECE_MASK) == Piece.PAWN)
-            //unmakePawnPromotionAndEnPassant(move);
+      if (move.getFlags() == Move.ENPASSANT){
+                   int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 2).getNewSqr();
+                int colorOfCapturedPawn = ((move.getPieceMoved() & Piece.COLOR_MASK) == Piece.WHITE) ? Piece.BLACK : Piece.WHITE;
+                board[capturedPawnIdx] = Piece.PAWN | colorOfCapturedPawn ;
+                piecePanel.getPiecePanels()[capturedPawnIdx].setPiece(board[capturedPawnIdx]);
+
+      }
         registeredMoves.remove(move);
          updatePieceList();
          whiteToMove = !whiteToMove;
@@ -246,14 +256,16 @@ public class Board {
         Collection<Move> moves = generateValidMoves(rank, file, piece);
         //Filter out moves that leave king in check
         Collection<Move> movesCopy = new ArrayList<Move>(moves);
-        for (Move eachMove : movesCopy) {
-            makeMove(eachMove);
+      /*   for (Move eachMove : movesCopy) {
+            makeMove(eachMove, false);
             if (isKingInCheck(piece & Piece.COLOR_MASK) == true) {
                 moves.remove(eachMove);
             }
-            unmakeMove(eachMove);
-        }
-        return moves;        
+            unmakeMove(eachMove, false);
+        } */
+        //Testing so i can see the unmake working.
+       return moves;        
+
     }
 
     public boolean isKingInCheck(int color) {
