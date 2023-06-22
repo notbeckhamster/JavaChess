@@ -68,6 +68,13 @@ public class TopPanel extends JPanel {
     public PiecePanel[] getPiecePanels(){
         return piecePanels;
     }
+    public void updateForTesting(){
 
+        int[] boardArray = ChessFrame.getChessPanel().getBoard().getBoardArray();
+        for (int i = 0; i < 64; i++){
+            piecePanels[i].setPiece(boardArray[i]);
+        }
+
+    }
  
 }

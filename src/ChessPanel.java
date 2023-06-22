@@ -31,6 +31,12 @@ public class ChessPanel extends JLayeredPane {
     public JLayeredPane getMainLayeredPane() {
         return this;
     }
+    public TopPanel getTopPanel(){
+        return piecePanel;
+    }
+    public Board getBoard(){
+        return board;
+    }
 
     private class MyMouseAdapter extends MouseAdapter {
         JLabel selectedPiece = null;
@@ -85,6 +91,7 @@ public class ChessPanel extends JLayeredPane {
 
         public void mouseReleased(MouseEvent e) {
             resetAttackHighlights();
+               resetValidMoves();
             // If out of bounds, return the piece to the original square
             if (e.getPoint().x > 800 || e.getPoint().y > 800 || e.getPoint().x < 0 || e.getPoint().y < 0) {
                 returnPiece();
@@ -118,13 +125,13 @@ public class ChessPanel extends JLayeredPane {
                 
                 highlightSquares(selectedPanel);
                 remove(selectedPiece);
-         resetValidMoves();
+        
                 }
 
             } else {
                 // Reset the piece to the old square
                 returnPiece();
-resetValidMoves();
+
             }
 
          
