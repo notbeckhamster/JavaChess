@@ -16,14 +16,7 @@ public class Piece {
     public final static int MOVED_MASK = 0b100000;
     public final static int MOVED = 32;
 
-    public static void setMoved(int piece, boolean ifMoved){
-        if(ifMoved){
-            piece |= MOVED;
-         } else{
-            piece &= ~MOVED;
-         }
-        
-    }
+    
 
     public static boolean ifMoved(int piece){
         return (piece & MOVED_MASK) == MOVED;

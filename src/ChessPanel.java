@@ -62,7 +62,7 @@ public class ChessPanel extends JLayeredPane {
                 selectedPiece = new JLabel(selectedPiece.getIcon(), SwingConstants.CENTER);
                 selectedPiece.setSize(new Dimension(100, 100));
                 //set valid moves
-                validMoves = board.validMoves(oldRank, oldFile, selectedPanel.getPiece());
+                validMoves = board.validMoves(oldRank, oldFile);
                 highlightValidMoves(selectedPanel);
                 highlightAttackedSquares(selectedPanel);
                 selectedPanel.setPiece(Piece.NONE);

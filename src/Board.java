@@ -149,11 +149,12 @@ public class Board {
         }
         for (int i = 0; i < 64; i++) {
             int piece = board[i];
-            if ((piece & Piece.PIECE_MASK) != Piece.NONE){
+            int idx = piece & Piece.PIECE_MASK;
+            if (idx != Piece.NONE){
                 if ((piece & Piece.COLOR_MASK) == Piece.WHITE) {
-                    whitePieceArr[piece & Piece.PIECE_MASK].add(i);
+                    whitePieceArr[idx].add(i);
                 } else {
-                    blackPieceArr[piece & Piece.PIECE_MASK].add(i);
+                    blackPieceArr[idx].add(i);
                 }
         }
         }
@@ -163,11 +164,11 @@ public class Board {
     }
    
     public void makeMove(Move move, boolean ifUpdateGUI) {
-
         int oldIdx = move.getOldSqr();
         int newIdx = move.getNewSqr();
+      
         board[newIdx] = move.getPieceMoved();
-        Piece.setMoved(board[newIdx], true);
+        board[newIdx] = board[newIdx] | Piece.MOVED;
         board[oldIdx] = Piece.NONE;
     
         if ((move.getPieceMoved() & Piece.PIECE_MASK) == Piece.PAWN)
@@ -185,6 +186,38 @@ public class Board {
                   piecePanel.getPiecePanels()[newIdx].setPiece(move.getPieceMoved());
             }
         } 
+
+        if (move.getFlags() == Move.CASTLE){
+            if (move.getNewSqr() == 2){
+                board[3] = board[0];
+                board[0] = Piece.NONE;
+                if (ifUpdateGUI){
+                    piecePanel.getPiecePanels()[3].setPiece(board[3]);
+                    piecePanel.getPiecePanels()[0].setPiece(Piece.NONE);
+                }
+            } else if (move.getNewSqr() == 6){
+                board[5] = board[7];
+                board[7] = Piece.NONE;
+                if (ifUpdateGUI){
+                    piecePanel.getPiecePanels()[5].setPiece(board[5]);
+                    piecePanel.getPiecePanels()[7].setPiece(Piece.NONE);
+                }
+            } else if (move.getNewSqr() == 58){
+                board[59] = board[56];
+                board[56] = Piece.NONE;
+                if (ifUpdateGUI){
+                    piecePanel.getPiecePanels()[59].setPiece(board[59]);
+                    piecePanel.getPiecePanels()[56].setPiece(Piece.NONE);
+                }
+            } else if (move.getNewSqr() == 62){
+                board[61] = board[63];
+                board[63] = Piece.NONE;
+                if (ifUpdateGUI){
+                    piecePanel.getPiecePanels()[61].setPiece(board[61]);
+                    piecePanel.getPiecePanels()[63].setPiece(Piece.NONE);
+                }
+            }
+        }
                 
         updatePieceList();
         //Update white to move
@@ -197,7 +230,7 @@ public class Board {
         int newIdx = move.getNewSqr();
         board[oldIdx] = move.getPieceMoved();
         board[newIdx] = move.getPiecesAtNewSquare();
-    
+        board[newIdx]=board[newIdx] & ~Piece.MOVED_MASK;
     
       if (move.getFlags() == Move.ENPASSANT){
                 int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 2).getNewSqr();
@@ -206,6 +239,40 @@ public class Board {
                 piecePanel.getPiecePanels()[capturedPawnIdx].setPiece(board[capturedPawnIdx]);
 
       }
+      if (move.getFlags() == Move.CASTLE){
+            if (move.getNewSqr() == 2){
+                board[0] = board[3];
+                board[3] = Piece.NONE;
+                if (ifUpdateGUI){
+                    piecePanel.getPiecePanels()[0].setPiece(board[0]);
+                    piecePanel.getPiecePanels()[3].setPiece(Piece.NONE);
+                }
+            } else if (move.getNewSqr() == 6){
+                board[7] = board[5];
+                board[5] = Piece.NONE;
+                if (ifUpdateGUI){
+                    piecePanel.getPiecePanels()[7].setPiece(board[7]);
+                    piecePanel.getPiecePanels()[5].setPiece(Piece.NONE);
+                }
+            } else if (move.getNewSqr() == 58){
+                board[59] = board[56];
+                board[56] = Piece.NONE;
+
+                board[56] = board[59];
+                board[59] = Piece.NONE;
+                if (ifUpdateGUI){
+                    piecePanel.getPiecePanels()[56].setPiece(board[56]);
+                    piecePanel.getPiecePanels()[59].setPiece(Piece.NONE);
+                }
+            } else if (move.getNewSqr() == 62){
+                board[63] = board[61];
+                board[61] = Piece.NONE;
+                if (ifUpdateGUI){
+                    piecePanel.getPiecePanels()[63].setPiece(board[63]);
+                    piecePanel.getPiecePanels()[61].setPiece(Piece.NONE);
+                }
+            }
+        }
         registeredMoves.remove(move);
          updatePieceList();
          whiteToMove = !whiteToMove;
@@ -256,9 +323,10 @@ public class Board {
 
     }
 
-    public Collection<Move> validMoves(int rank, int file, int piece) {
+    public Collection<Move> validMoves(int rank, int file) {
+        int piece = board[rank * 8 + file];
         //Generate board showing what is under attack
-        setAttackedSquares(piece);
+        setAttackedSquares(piece & Piece.COLOR_MASK);
         //Generate moves
         Collection<Move> moves = generateValidMoves(rank, file, piece);
         //Filter out moves that leave king in check
@@ -282,6 +350,14 @@ public class Board {
         int kingIdx = (color == Piece.WHITE) ? whitePieceArr[Piece.KING].get(0) : blackPieceArr[Piece.KING].get(0);
         //Check if king is under attack
         return attackedSquares[kingIdx];
+    }
+
+      public boolean isIndexInCheck(int idx, int color) {
+        //Pick attackedSquaresArr based on opposite color
+        boolean[] attackedSquares = (color == Piece.WHITE) ? blackAttackingSquares : whiteAttackingSquares;
+        
+        //Check if piece is under attack
+        return attackedSquares[idx];
     }
 
     public Collection<Move> generateValidMoves(int rank, int file, int piece){
@@ -568,6 +644,7 @@ public class Board {
         ArrayList<Move> moves = new ArrayList<Move>();
         int currIdx = 8 * rank + file;
         int piece = board[currIdx];
+        int color = piece & Piece.COLOR_MASK;
         // for each direction piece can move find the valid moves
         for (String eachDirection : dirToCompassRoseDirHM.keySet()) {
 
@@ -588,6 +665,40 @@ public class Board {
 
         }
 
+        // Castling
+        // If king has moved dont consider castling
+        if ((piece & Piece.MOVED_MASK) == Piece.MOVED) return moves;
+        // If king is in check dont consider castling
+        if (isKingInCheck(piece & Piece.COLOR_MASK)) return moves;
+
+        //Determine if king can castle on the right side of the board
+        boolean ifRightCastleValid = true;
+        // Check space is clear on the right side
+        for (int i = currIdx+1; i<currIdx+3; i++){
+
+            if (board[i] != Piece.NONE) ifRightCastleValid=false;
+            if (i <= currIdx+2 && isIndexInCheck(i, color)) ifRightCastleValid=false;
+
+        }
+        //Check the right rook is present and hasnt moved
+       if ((board[currIdx+3] & Piece.PIECE_MASK) == Piece.ROOK && (board[currIdx+3] & Piece.MOVED_MASK) == Piece.MOVED) ifRightCastleValid=false;
+
+        //Determine if king can castle on the left side of the board
+        boolean ifLeftCastleValid = true;
+        // Check space is clear on the left side
+        for (int i = currIdx-1; i> currIdx-4; i--){
+
+            if (board[i] != Piece.NONE) ifLeftCastleValid=false;
+            if (i >= currIdx-2 &&isIndexInCheck(i, color)) ifLeftCastleValid=false;
+
+        }
+        //Check the left rook hasnt moved
+        System.out.println(currIdx);
+        if ((board[currIdx-4] & Piece.PIECE_MASK) == Piece.ROOK && (board[currIdx-4] & Piece.MOVED_MASK) == Piece.MOVED) ifLeftCastleValid=false;
+        
+        //Add castle moves ifLeftCastleValid or ifRightCastleValid is true
+        if (ifLeftCastleValid == true) moves.add(new Move(currIdx, currIdx-2, piece, Piece.NONE, Move.CASTLE));
+        if (ifRightCastleValid == true) moves.add(new Move(currIdx, currIdx+2, piece, Piece.NONE, Move.CASTLE));
         return moves;
     }
 
