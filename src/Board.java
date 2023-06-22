@@ -42,6 +42,12 @@ public class Board {
 
         initBoard();
     }
+    public ArrayList<Integer>[] getWhitePieceArr(){
+        return whitePieceArr;
+    }
+    public ArrayList<Integer>[] getBlackPieceArr(){
+        return blackPieceArr;
+    }
     public boolean ifWhiteIsToMove(){
         return whiteToMove;
     }
