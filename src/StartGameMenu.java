@@ -13,8 +13,9 @@ public class StartGameMenu{
     public StartGameMenu() {
         actions = new ArrayList<Action>();
         actions.add(new PlayWhiteAction());
-        actions.add(new PlayBlackAction());
-        actions.add(new AIvsAIAction());
+     //   actions.add(new PlayBlackAction());
+        actions.add(new HumanVsHumanAction());
+       // actions.add(new AIvsAIAction());
     }
 
 
@@ -42,12 +43,20 @@ public class StartGameMenu{
           //  ChessFrame.getChessPanel().startGame(Piece.BLACK);
         }
     }
-    public class AIvsAIAction extends AbstractAction{
+    public class HumanVsHumanAction extends AbstractAction{
+        public HumanVsHumanAction(){
+            super("HumanVsHuman");
+        }
+        public void actionPerformed(ActionEvent e){
+          //  ChessFrame.getChessPanel().startGame(Piece.BLACK);
+        }
+    }
+/*     public class AIvsAIAction extends AbstractAction{
         public AIvsAIAction(){
             super("AI vs AI");
         }
         public void actionPerformed(ActionEvent e){
            // ChessFrame.getChessPanel().startGame(Piece.WHITE);
         }
-    }
+    } */
 }

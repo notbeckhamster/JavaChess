@@ -13,7 +13,7 @@ import javax.swing.SwingConstants;
 public class ChessPanel extends JLayeredPane {
     protected TopPanel piecePanel;
     private Board board = new Board();
-  
+    private boolean isWhiteTurn = true;
     public ChessPanel() {
         setPreferredSize(new java.awt.Dimension(900, 900));
         BackgroundPanel background = new BackgroundPanel();
@@ -57,6 +57,11 @@ public class ChessPanel extends JLayeredPane {
                 oldRank = selectedPanel.getRank();
                 oldFile = selectedPanel.getFile();
                 oldPiece = selectedPanel.getPiece();
+                int turn = (isWhiteTurn ? Piece.WHITE : Piece.BLACK);
+                int colorSelected = (oldPiece & Piece.COLOR_MASK);
+                if (turn != colorSelected) {
+                    return;
+                }
                 // Copy the JLabelPiece to the selectedPiece
                 selectedPiece = selectedPanel.getJLabelPiece();
                 selectedPiece = new JLabel(selectedPiece.getIcon(), SwingConstants.CENTER);
@@ -79,8 +84,12 @@ public class ChessPanel extends JLayeredPane {
         }
 
         public void mouseDragged(MouseEvent e) {
-            // If there is no piece selected, select the piece
-
+      
+                int turn = (isWhiteTurn ? Piece.WHITE : Piece.BLACK);
+                int colorSelected = (oldPiece & Piece.COLOR_MASK);
+                if (turn != colorSelected) {
+                    return;
+                }
             int centerX = e.getPoint().x - selectedPiece.getWidth() / 2;
             int centerY = e.getPoint().y - selectedPiece.getHeight() / 2;
             selectedPiece.setLocation(centerX, centerY);
@@ -119,6 +128,7 @@ public class ChessPanel extends JLayeredPane {
                 
                 // Make move to board 
                 board.makeMove(move, true);
+                isWhiteTurn = isWhiteTurn ? false : true;
                 //Set highlights and remove old highlights    
                 highlightSquares(selectedPanel);
                 remove(selectedPiece);
