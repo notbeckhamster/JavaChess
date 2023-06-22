@@ -175,8 +175,16 @@ public class Board {
         registeredMoves.add(move);
         // Move the piece to the new square
         if (ifUpdateGUI){
+            if (move.getFlags() == Move.PROMOTION){
+                 piecePanel.getPiecePanels()[newIdx].setPiece(board[newIdx]);
+            } else if (move.getFlags() == Move.ENPASSANT){
+             piecePanel.getPiecePanels()[newIdx].setPiece(move.getPieceMoved());
+                 int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 2).getNewSqr();
+               piecePanel.getPiecePanels()[capturedPawnIdx].setPiece(Piece.NONE); 
+            } else {
                   piecePanel.getPiecePanels()[newIdx].setPiece(move.getPieceMoved());
-        }
+            }
+        } 
                 
         updatePieceList();
         //Update white to move
@@ -192,7 +200,7 @@ public class Board {
     
     
       if (move.getFlags() == Move.ENPASSANT){
-                   int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 2).getNewSqr();
+                int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 2).getNewSqr();
                 int colorOfCapturedPawn = ((move.getPieceMoved() & Piece.COLOR_MASK) == Piece.WHITE) ? Piece.BLACK : Piece.WHITE;
                 board[capturedPawnIdx] = Piece.PAWN | colorOfCapturedPawn ;
                 piecePanel.getPiecePanels()[capturedPawnIdx].setPiece(board[capturedPawnIdx]);
@@ -216,7 +224,6 @@ public class Board {
             // pawn is on last rank
             // promote pawn to queen
             board[newIdx] = (piece & Piece.COLOR_MASK) | Piece.QUEEN;
-            piecePanel.getPiecePanels()[newIdx].setPiece(Piece.QUEEN | (piece & Piece.COLOR_MASK));
         } else {
             if (registeredMoves.size() < 2)
                 return;
@@ -242,7 +249,7 @@ public class Board {
                 // Captured pawn idx
                 int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 1).getNewSqr();
                 board[capturedPawnIdx] = Piece.NONE;
-                piecePanel.getPiecePanels()[capturedPawnIdx].setPiece(Piece.NONE);
+                
 
             }
         }
@@ -256,13 +263,13 @@ public class Board {
         Collection<Move> moves = generateValidMoves(rank, file, piece);
         //Filter out moves that leave king in check
         Collection<Move> movesCopy = new ArrayList<Move>(moves);
-      /*   for (Move eachMove : movesCopy) {
+         for (Move eachMove : movesCopy) {
             makeMove(eachMove, false);
             if (isKingInCheck(piece & Piece.COLOR_MASK) == true) {
                 moves.remove(eachMove);
             }
             unmakeMove(eachMove, false);
-        } */
+        } 
         //Testing so i can see the unmake working.
        return moves;        
 
@@ -463,11 +470,11 @@ public class Board {
         int numToEdgeRight = dirToNumToEdgeHM.get(rightDirectionKey)[8 * rank + file];
         if (isOnBoard(leftCaptureSqr) && numToEdgeLeft > 0 && board[leftCaptureSqr] != Piece.NONE
                 && Piece.isColor(piece, board[leftCaptureSqr] & Piece.COLOR_MASK) == false) {
-            moves.add(new Move(currIdx, leftCaptureSqr, piece, board[leftCaptureSqr], Move.NORMAL));
+            moves.add(new Move(currIdx, leftCaptureSqr, piece, board[leftCaptureSqr], (leftCaptureSqr/8 == 0 || leftCaptureSqr/8 == 7) ? Move.PROMOTION : Move.NORMAL));
         }
         if (isOnBoard(rightCaptureSqr) && numToEdgeRight > 0 && board[rightCaptureSqr] != Piece.NONE
                 && Piece.isColor(piece, board[rightCaptureSqr] & Piece.COLOR_MASK) == false) {
-            moves.add(new Move(currIdx, rightCaptureSqr, piece , board[rightCaptureSqr], Move.NORMAL));
+            moves.add(new Move(currIdx, rightCaptureSqr, piece , board[rightCaptureSqr],(rightCaptureSqr/8 == 0 || rightCaptureSqr/8 == 7) ? Move.PROMOTION : Move.NORMAL));
         }
         return moves;
 
