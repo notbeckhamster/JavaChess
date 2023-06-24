@@ -41,6 +41,7 @@ public class Board {
     private boolean ifBlackQueenSideCastle= true;
     private boolean ifWhiteKingSideCastle = true;
     private boolean ifWhiteQueenSideCastle = true;
+   
 
 
     public Board() {
@@ -107,7 +108,7 @@ public class Board {
             }
         }
   // set up board
-        setBoardFromFEN("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2");
+        setBoardFromFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
        
          setPieceLists();
     }
@@ -224,6 +225,7 @@ public class Board {
                 int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 2).getNewSqr();
                 int colorOfCapturedPawn = ((move.getPieceMoved() & Piece.COLOR_MASK) == Piece.WHITE) ? Piece.BLACK : Piece.WHITE;
                 board[capturedPawnIdx] = Piece.PAWN | colorOfCapturedPawn ;
+                if (ifUpdateGUI)
                 piecePanel.getPiecePanels()[capturedPawnIdx].setPiece(board[capturedPawnIdx]);
 
       }
@@ -499,29 +501,7 @@ public class Board {
             }
         }
 
-        // Check if enpassant is valid move
-        // Grab info about last move
-        if (registeredMoves.size() != 0) {
-            Move lastMove = registeredMoves.get(registeredMoves.size() - 1);
-            int lastPiece = lastMove.getPieceMoved();
-            int lastOldIdx = lastMove.getOldSqr();
-            int lastNewIdx = lastMove.getNewSqr();
-            // Check if last piece is a pawn which moves two squares
-            if ((lastPiece & Piece.PIECE_MASK) == Piece.PAWN && Math.abs(lastOldIdx - lastNewIdx) == 16) {
-                // Check if the last move was next to the current pawn
-                int lastDirection = 0;
-                boolean ifBeside = lastNewIdx == currIdx + dirToCompassRoseDirHM.get("east")
-                        || lastNewIdx == currIdx + dirToCompassRoseDirHM.get("west");
-                if (ifBeside == true) {
-                    if (Piece.isColor(piece, Piece.WHITE)) {
-                        lastDirection = dirToCompassRoseDirHM.get("nort");
-                    } else {
-                        lastDirection = dirToCompassRoseDirHM.get("sout");
-                    }
-                    moves.add(new Move(currIdx, lastNewIdx + lastDirection, piece, Piece.NONE, Move.ENPASSANT));
-                }
-            }
-        }
+      
 
         // Add the diagonal moves if there is an enemy piece
         String leftDirectionKey = Piece.isColor(piece, Piece.WHITE) ? "noWe" : "soWe";
@@ -539,6 +519,30 @@ public class Board {
         if (isOnBoard(rightCaptureSqr) && numToEdgeRight > 0 && board[rightCaptureSqr] != Piece.NONE
                 && Piece.isColor(piece, board[rightCaptureSqr] & Piece.COLOR_MASK) == false) {
             moves.add(new Move(currIdx, rightCaptureSqr, piece , board[rightCaptureSqr],(rightCaptureSqr/8 == 0 || rightCaptureSqr/8 == 7) ? Move.PROMOTION : Move.NORMAL));
+        }
+
+          // Check if enpassant is valid move
+        // Grab info about last move
+        if (registeredMoves.size() != 0) {
+            Move lastMove = registeredMoves.get(registeredMoves.size() - 1);
+            int lastPiece = lastMove.getPieceMoved();
+            int lastOldIdx = lastMove.getOldSqr();
+            int lastNewIdx = lastMove.getNewSqr();
+            // Check if last piece is a pawn which moves two squares
+            if ((lastPiece & Piece.PIECE_MASK) == Piece.PAWN && Math.abs(lastOldIdx - lastNewIdx) == 16) {
+                // Check if the last move was next to the current pawn
+                int lastDirection = 0;
+                boolean ifBeside = (lastNewIdx == currIdx + dirToCompassRoseDirHM.get("east") && numToEdgeRight != 0)
+                        || (lastNewIdx == currIdx + dirToCompassRoseDirHM.get("west") && numToEdgeLeft != 0);
+                if (ifBeside == true) {
+                    if (Piece.isColor(piece, Piece.WHITE)) {
+                        lastDirection = dirToCompassRoseDirHM.get("nort");
+                    } else {
+                        lastDirection = dirToCompassRoseDirHM.get("sout");
+                    }
+                    moves.add(new Move(currIdx, lastNewIdx + lastDirection, piece, Piece.NONE, Move.ENPASSANT));
+                }
+            }
         }
         return moves;
 
@@ -809,5 +813,9 @@ public class Board {
             }
         }
 
+    }
+
+    public boolean getWhiteToMove(){
+        return whiteToMove;
     }
 }
