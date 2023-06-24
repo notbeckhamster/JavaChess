@@ -71,9 +71,7 @@ public class Board {
         blackPieceArr[Piece.QUEEN] = blackQueenSquares;
         blackPieceArr[Piece.KING] = blackKingSquares;
 
-        // set up board
-        setBoardFromFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-       
+      
         // setup compass rose
         dirToCompassRoseDirHM.put("nort", 8);
         dirToCompassRoseDirHM.put("noWe", 7);
@@ -108,7 +106,9 @@ public class Board {
                 soEaNumToEdge[idx] = Math.min(southNumToEdge[idx], eastNumToEdge[idx]);
             }
         }
-
+  // set up board
+        setBoardFromFEN("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2");
+       
          setPieceLists();
     }
 
@@ -652,7 +652,9 @@ public class Board {
             }
 
         }
-
+        //Add boolean flags from position to Fenn is castling rights are available
+        boolean kingSideCastle = color == Piece.WHITE ? ifWhiteKingSideCastle : ifBlackKingSideCastle;
+        boolean queenSideCastle = color == Piece.WHITE ? ifWhiteQueenSideCastle : ifBlackQueenSideCastle;
         // Castling
         // If king has moved dont consider castling
         if ((piece & Piece.MOVED_MASK) == Piece.MOVED) return moves;
@@ -660,9 +662,9 @@ public class Board {
         if (isKingInCheck(piece & Piece.COLOR_MASK)) return moves;
 
         //Determine if king can castle on the right side of the board
-        boolean ifRightCastleValid = true;
+        boolean ifRightCastleValid = kingSideCastle;
         // Check space is clear on the right side
-        for (int i = currIdx+1; i<currIdx+3; i++){
+        for (int i = currIdx+1; i<currIdx+3 && ifRightCastleValid == true; i++){
 
             if (board[i] != Piece.NONE) ifRightCastleValid=false;
             if (i <= currIdx+2 && isIndexInCheck(i, color)) ifRightCastleValid=false;
@@ -672,9 +674,9 @@ public class Board {
        if ((board[currIdx+3] & Piece.PIECE_MASK) == Piece.ROOK && (board[currIdx+3] & Piece.MOVED_MASK) == Piece.MOVED) ifRightCastleValid=false;
 
         //Determine if king can castle on the left side of the board
-        boolean ifLeftCastleValid = true;
+        boolean ifLeftCastleValid = queenSideCastle;
         // Check space is clear on the left side
-        for (int i = currIdx-1; i> currIdx-4; i--){
+        for (int i = currIdx-1; i> currIdx-4 && ifLeftCastleValid==true; i--){
 
             if (board[i] != Piece.NONE) ifLeftCastleValid=false;
             if (i >= currIdx-2 &&isIndexInCheck(i, color)) ifLeftCastleValid=false;
@@ -721,12 +723,12 @@ public class Board {
 
     public void setBoardFromFEN(String fen){
         HashMap<Character, Integer> pieceToPieceMaskHM = new HashMap<Character, Integer>();
-        pieceToPieceMaskHM.put('p', Piece.PAWN | Piece.MOVED);
-        pieceToPieceMaskHM.put('n', Piece.KNIGHT | Piece.MOVED);
-        pieceToPieceMaskHM.put('b', Piece.BISHOP | Piece.MOVED);
-        pieceToPieceMaskHM.put('r', Piece.ROOK | Piece.MOVED);
-        pieceToPieceMaskHM.put('q', Piece.QUEEN | Piece.MOVED);
-        pieceToPieceMaskHM.put('k', Piece.KING | Piece.MOVED);
+        pieceToPieceMaskHM.put('p', Piece.PAWN | Piece.BLACK);
+        pieceToPieceMaskHM.put('n', Piece.KNIGHT | Piece.BLACK);
+        pieceToPieceMaskHM.put('b', Piece.BISHOP | Piece.BLACK);
+        pieceToPieceMaskHM.put('r', Piece.ROOK | Piece.BLACK);
+        pieceToPieceMaskHM.put('q', Piece.QUEEN | Piece.BLACK);
+        pieceToPieceMaskHM.put('k', Piece.KING | Piece.BLACK);
         pieceToPieceMaskHM.put('P', Piece.PAWN | Piece.WHITE);
         pieceToPieceMaskHM.put('N', Piece.KNIGHT | Piece.WHITE);
         pieceToPieceMaskHM.put('B', Piece.BISHOP | Piece.WHITE);
@@ -801,7 +803,7 @@ public class Board {
             int rankIdx = enPassantSquare.charAt(1) - '1';
             int enPassantSquareIdx = 8 * rankIdx + fileIdx;
             if (whiteToMove){
-                registeredMoves.add(new Move(enPassantSquareIdx-2*dirToCompassRoseDirHM.get("nort"), enPassantSquareIdx+dirToCompassRoseDirHM.get("sout"), Piece.PAWN | Piece.BLACK , Piece.NONE, Move.ENPASSANT));
+                registeredMoves.add(new Move(enPassantSquareIdx+2*dirToCompassRoseDirHM.get("nort"), enPassantSquareIdx+dirToCompassRoseDirHM.get("sout"), Piece.PAWN | Piece.BLACK , Piece.NONE, Move.ENPASSANT));
         }   else {
                 registeredMoves.add(new Move(enPassantSquareIdx+2*dirToCompassRoseDirHM.get("sout"), enPassantSquareIdx-dirToCompassRoseDirHM.get("nort"), Piece.PAWN | Piece.WHITE , Piece.NONE, Move.ENPASSANT));
             }

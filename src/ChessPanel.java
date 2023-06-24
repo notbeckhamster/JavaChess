@@ -18,7 +18,7 @@ public class ChessPanel extends JLayeredPane {
         setPreferredSize(new java.awt.Dimension(900, 900));
         BackgroundPanel background = new BackgroundPanel();
         add(background, JLayeredPane.DEFAULT_LAYER);
-        piecePanel = new TopPanel();
+        piecePanel = new TopPanel(this);
         board.setPiecePanel(piecePanel);
         add(piecePanel, JLayeredPane.PALETTE_LAYER);
         piecePanel.setLocation(0, 0);
