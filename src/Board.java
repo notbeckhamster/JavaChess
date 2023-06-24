@@ -71,31 +71,8 @@ public class Board {
         blackPieceArr[Piece.QUEEN] = blackQueenSquares;
         blackPieceArr[Piece.KING] = blackKingSquares;
 
-        // Set up board
-
-        board[56] = Piece.BLACK | Piece.ROOK;
-        board[57] = Piece.BLACK | Piece.KNIGHT;
-        board[58] = Piece.BLACK | Piece.BISHOP;
-        board[59] = Piece.BLACK | Piece.QUEEN;
-        board[60] = Piece.BLACK | Piece.KING;
-        board[61] = Piece.BLACK | Piece.BISHOP;
-        board[62] = Piece.BLACK | Piece.KNIGHT;
-        board[63] = Piece.BLACK | Piece.ROOK;
-        for (int i = 48; i < 56; i++) {
-            board[i] = Piece.BLACK | Piece.PAWN;
-        }
-        board[0] = Piece.WHITE | Piece.ROOK;
-        board[1] = Piece.WHITE | Piece.KNIGHT;
-        board[2] = Piece.WHITE | Piece.BISHOP;
-        board[3] = Piece.WHITE | Piece.QUEEN;
-        board[4] = Piece.WHITE | Piece.KING;
-        board[5] = Piece.WHITE | Piece.BISHOP;
-        board[6] = Piece.WHITE | Piece.KNIGHT;
-        board[7] = Piece.WHITE | Piece.ROOK;
-        for (int i = 8; i < 16; i++) {
-            board[i] = Piece.WHITE | Piece.PAWN;
-        }
-
+        // set up board
+        setBoardFromFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
        
         // setup compass rose
         dirToCompassRoseDirHM.put("nort", 8);
@@ -757,6 +734,9 @@ public class Board {
         pieceToPieceMaskHM.put('Q', Piece.QUEEN | Piece.WHITE);
         pieceToPieceMaskHM.put('K', Piece.KING | Piece.WHITE);
 
+        //Clear board 
+        board = new int[64];
+
         String[] fenArr = fen.split(" ");
         //Determine the piece placement
         int file = 0; 
@@ -820,7 +800,12 @@ public class Board {
             int fileIdx = enPassantSquare.charAt(0) - 'a';
             int rankIdx = enPassantSquare.charAt(1) - '1';
             int enPassantSquareIdx = 8 * rankIdx + fileIdx;
-        }   
+            if (whiteToMove){
+                registeredMoves.add(new Move(enPassantSquareIdx-2*dirToCompassRoseDirHM.get("nort"), enPassantSquareIdx+dirToCompassRoseDirHM.get("sout"), Piece.PAWN | Piece.BLACK , Piece.NONE, Move.ENPASSANT));
+        }   else {
+                registeredMoves.add(new Move(enPassantSquareIdx+2*dirToCompassRoseDirHM.get("sout"), enPassantSquareIdx-dirToCompassRoseDirHM.get("nort"), Piece.PAWN | Piece.WHITE , Piece.NONE, Move.ENPASSANT));
+            }
+        }
 
     }
 }
