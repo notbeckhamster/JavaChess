@@ -37,6 +37,11 @@ public class Board {
     private ArrayList<Move> registeredMoves = new ArrayList<Move>();
     private TopPanel piecePanel;
     private boolean whiteToMove = true;
+    private boolean ifBlackKingSideCastle = true;
+    private boolean ifBlackQueenSideCastle= true;
+    private boolean ifWhiteKingSideCastle = true;
+    private boolean ifWhiteQueenSideCastle = true;
+
 
     public Board() {
 
@@ -699,7 +704,6 @@ public class Board {
 
         }
         //Check the left rook hasnt moved
-        System.out.println(currIdx);
         if ((board[currIdx-4] & Piece.PIECE_MASK) == Piece.ROOK && (board[currIdx-4] & Piece.MOVED_MASK) == Piece.MOVED) ifLeftCastleValid=false;
         
         //Add castle moves ifLeftCastleValid or ifRightCastleValid is true
@@ -736,5 +740,87 @@ public class Board {
 
     public int[] getBoardArray(){
         return board;
+    }
+
+    public void setBoardFromFEN(String fen){
+        HashMap<Character, Integer> pieceToPieceMaskHM = new HashMap<Character, Integer>();
+        pieceToPieceMaskHM.put('p', Piece.PAWN | Piece.MOVED);
+        pieceToPieceMaskHM.put('n', Piece.KNIGHT | Piece.MOVED);
+        pieceToPieceMaskHM.put('b', Piece.BISHOP | Piece.MOVED);
+        pieceToPieceMaskHM.put('r', Piece.ROOK | Piece.MOVED);
+        pieceToPieceMaskHM.put('q', Piece.QUEEN | Piece.MOVED);
+        pieceToPieceMaskHM.put('k', Piece.KING | Piece.MOVED);
+        pieceToPieceMaskHM.put('P', Piece.PAWN | Piece.WHITE);
+        pieceToPieceMaskHM.put('N', Piece.KNIGHT | Piece.WHITE);
+        pieceToPieceMaskHM.put('B', Piece.BISHOP | Piece.WHITE);
+        pieceToPieceMaskHM.put('R', Piece.ROOK | Piece.WHITE);
+        pieceToPieceMaskHM.put('Q', Piece.QUEEN | Piece.WHITE);
+        pieceToPieceMaskHM.put('K', Piece.KING | Piece.WHITE);
+
+        String[] fenArr = fen.split(" ");
+        //Determine the piece placement
+        int file = 0; 
+        int rank = 7;
+        String piecePlacement = fenArr[0];
+        for (int i =0; i<piecePlacement.length(); i++){
+            char currChar = piecePlacement.charAt(i);
+            if (currChar == '/'){
+                rank--;
+                file = 0;
+            }else{
+                //Either a number or a piece
+                if (Character.isDigit(currChar)){
+                    file += Character.getNumericValue(currChar);
+                }else {
+                    int piece = pieceToPieceMaskHM.get(currChar);
+                    int currIdx = 8 * rank + file;
+                    board[currIdx] = piece;
+                    file++;
+                }
+
+            }
+
+        }
+        //Determine the active color/ side to move 
+        String activeColor = fenArr[1];
+        if (activeColor.equals("w")){
+            whiteToMove = true;
+        }else{
+            whiteToMove = false;
+        }
+
+        //Determine castling rights 
+        String castlingRights = fenArr[2];
+        for (int i =0; i<castlingRights.length(); i++){
+            char currChar = castlingRights.charAt(i);
+            if (currChar == '-'){
+                ifWhiteKingSideCastle=false;
+                ifWhiteQueenSideCastle=false;
+                ifBlackKingSideCastle=false;
+                ifBlackQueenSideCastle=false;
+                break;
+            }else{
+                if (currChar == 'K'){
+                    ifWhiteKingSideCastle = true;
+                }else if (currChar == 'Q'){
+                    ifWhiteQueenSideCastle = true;
+                }else if (currChar == 'k'){
+                    ifBlackKingSideCastle = true;
+                }else if (currChar == 'q'){
+                    ifBlackQueenSideCastle = true;
+                }
+            }
+        }
+
+        //Determine en passant square
+        String enPassantSquare = fenArr[3];
+        if (enPassantSquare.equals("-")){
+            //DoNothing
+        }else {
+            int fileIdx = enPassantSquare.charAt(0) - 'a';
+            int rankIdx = enPassantSquare.charAt(1) - '1';
+            int enPassantSquareIdx = 8 * rankIdx + fileIdx;
+        }   
+
     }
 }

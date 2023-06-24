@@ -13,21 +13,21 @@ public class TestPositionTest {
     private boolean isWhiteTurn = true;
     @Test
     public void TestDepth0() {
-
+board = new Board();
         Assert.assertEquals(1, perft(0));
    
     }
 
     @Test
     public void TestDepth1() {
-
+board = new Board();
         Assert.assertEquals(20, perft(1));
     }
 
     @Test
     public void TestDepth2() {
+board = new Board();        Assert.assertEquals(400, perft(2));
 
-        Assert.assertEquals(400, perft(2));
     }
 
     @Test
@@ -44,9 +44,13 @@ public class TestPositionTest {
         int nodes = 0;
         Collection<Move> moves = genAllPseudoLegalMoves();
         for (Move move : moves) {
+
             board.makeMove(move, false);
-            nodes += perft(depth - 1);
+            int nodesAtMove = perft(depth - 1);
+            nodes += nodesAtMove;
             board.unmakeMove(move, false);
+            System.out.println(depth + "," + translateMoveToString(move) + "," + nodesAtMove);
+          
         }
         return nodes;
     }
@@ -68,5 +72,68 @@ public class TestPositionTest {
         return result;
 
 
+    }
+
+    public String translateMoveToString(Move move){
+        return translateIndexToString(move.getOldSqr()) + translateIndexToString(move.getNewSqr());
+
+    }
+    public String translateIndexToString(int idx){
+        int rank = idx/8;
+        int file = idx%8;
+        String result = "";
+        switch (file){
+            case 0:
+                result += "a";
+                break;
+            case 1:
+                result += "b";
+                break;
+            case 2:
+                result += "c";
+                break;
+            case 3:
+                result += "d";
+                break;
+            case 4:
+                result += "e";
+                break;
+            case 5:
+                result += "f";
+                break;
+            case 6:
+                result += "g";
+                break;
+            case 7:
+                result += "h";
+                break;
+        }
+        switch (rank){
+            case 0:
+                result += "8";
+                break;
+            case 1:
+                result += "7";
+                break;
+            case 2:
+                result += "6";
+                break;
+            case 3:
+                result += "5";
+                break;
+            case 4:
+                result += "4";
+                break;
+            case 5:
+                result += "3";
+                break;
+            case 6:
+                result += "2";
+                break;
+            case 7:
+                result += "1";
+                break;
+        }
+        return result;
     }
 }
