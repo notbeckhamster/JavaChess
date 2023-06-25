@@ -8,7 +8,7 @@
             "type": "java",
             "name": "ChessFrame",
             "request": "launch",
-            "mainClass": "src.java.ChessFrame",
+            "mainClass": "src.ChessFrame",
             "projectName": "JavaChess_c10c3f01"
         },
         {

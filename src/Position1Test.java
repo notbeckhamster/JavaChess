@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.*;
 
-public class PositionTest {
+public class Position1Test {
     private Board board = new Board();
     private int depth = 0;
 

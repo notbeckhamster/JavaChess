@@ -14,7 +14,7 @@ Extract Zip file and ensure you are in the JavaApp folder then run the following
 If that doesn't work navigate to the actions tab and scroll down to artifacts and download the JavaApp artifact and repeat steps above with regards to running the jar file. Or just clone the repo and run the ant cmd with no arguments to run the app (ie ant). 
 
 ## References
-* Chess Programming Wiki for guidance in terms of logic. https://www.chessprogramming.org/Main_Page
+* Chess Programming Wiki for guidance. https://www.chessprogramming.org/Main_Page
 * Sebastian Lague Coding Adventures: Chess for some inspiration with regards to the general direction and drew my attention since I haven't really tried using the Bit operators. 
 https://www.youtube.com/watch?v=U4ogK0MIzqk
 * Stack Over flow [answer](https://stackoverflow.com/a/4687759) from Hovercraft Full Of Eels. Which I referenced for the JLayeredPane idea, and the Drag and Drop logic.
@@ -33,3 +33,9 @@ SVG chess pieces taken from [here](https://commons.wikimedia.org/wiki/Category:S
 
 ## Other Projects Used 
 The link generated for jar file in the README.md is from [oprypin](https://github.com/oprypin) project [nightly.link](https://github.com/oprypin/nightly.link) which gives a static link which is the latest jar artifact since GitHub always changes the links.
+
+## Perft Results
+Expected results were taken from [https://www.chessprogramming.org/Perft_Results](https://www.chessprogramming.org/Perft_Results). 
+* Position 1 rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+* Position 2 r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 
+
