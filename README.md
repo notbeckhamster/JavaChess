@@ -11,7 +11,7 @@ Licensed under [MIT](https://github.com/notbeckhamster/JavaChess/blob/main/LICEN
 Assuming you do have Java Runtime installed (I am using Java 17)
 Extract Zip file and ensure you are in the JavaApp folder then run the following: java -jar JavaChess.jar
 
-If that doesn't work navigate to the actions tab and scroll down to artifacts and download the JavaApp artifact and repeat steps above with regards to running the jar file. Or just clone the repo and run the make cmd with no arguements to run the app.
+If that doesn't work navigate to the actions tab and scroll down to artifacts and download the JavaApp artifact and repeat steps above with regards to running the jar file. Or just clone the repo and run the ant cmd with no arguments to run the app (ie ant). 
 
 ## References
 * Chess Programming Wiki for guidance in terms of logic. https://www.chessprogramming.org/Main_Page

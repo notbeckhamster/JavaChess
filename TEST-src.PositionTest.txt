@@ -1,5 +1,5 @@
 Testsuite: src.PositionTest
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.229 sec
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.216 sec
 ------------- Standard Output ---------------
 b1c3: 1
 b1a3: 1
@@ -64,6 +64,6 @@ h2h4: 420
 ------------- ---------------- ---------------
 
 Testcase: testDepth0 took 0.002 sec
-Testcase: testDepth1 took 0.007 sec
-Testcase: testDepth2 took 0.018 sec
-Testcase: testDepth3 took 0.198 sec
+Testcase: testDepth1 took 0.006 sec
+Testcase: testDepth2 took 0.014 sec
+Testcase: testDepth3 took 0.189 sec
