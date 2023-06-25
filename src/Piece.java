@@ -1,5 +1,6 @@
 package src;
 
+
 public class Piece {
     public final static int NONE = 0;
     public final static int KING = 1;

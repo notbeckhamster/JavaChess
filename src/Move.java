@@ -1,5 +1,6 @@
 package src;
 
+
 public class Move {
     private int oldSqr;
     private int newSqrt;

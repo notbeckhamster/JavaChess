@@ -1,39 +1,36 @@
-package src.test;
+package src;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
-
 import org.junit.*;
 
-import src.Board;
-import src.Move;
-
-public class TestPositionTest {
+public class PositionTest {
     private Board board = new Board();
     private int depth = 0;
 
     @Test
-    public void TestDepth0() {
+    public void testDepth0() {
         depth = 0;
         Assert.assertEquals(1, perft(0));
 
     }
 
     @Test
-    public void TestDepth1() {
+    public void testDepth1() {
         depth = 1;
         Assert.assertEquals(20, perft(1));
     }
 
     @Test
-    public void TestDepth2() {
+    public void testDepth2() {
         depth = 2;
         Assert.assertEquals(400, perft(2));
 
     }
 
     @Test
-    public void TestDepth3() {
+    public void testDepth3() {
         depth = 3;
         Assert.assertEquals(8902, perft(3));
     }

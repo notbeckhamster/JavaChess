@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "ChessFrame",
+            "request": "launch",
+            "mainClass": "src.java.ChessFrame",
+            "projectName": "JavaChess_c10c3f01"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
