@@ -48,7 +48,7 @@ public class Board {
         initBoard();
         // set up board
         String defaultPos = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        setBoardFromFEN("r3k3/p1ppqpbr/bn2Pnp1/4N3/Pp2P3/2N2Q1p/1PPBBPPP/R3K2R b KQq - 0 1");
+        setBoardFromFEN("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1pB1P3/2N2Q1p/PPPB1PPP/R3K2R b KQkq - 0 1");
     }
 
     public Board(String fen) {
@@ -296,31 +296,21 @@ public class Board {
     }
 
     public void performEnPassant(Move move, int capturedPieceIfAny) {
-        if (registeredMoves.size() < 2)
-            return;
-        // Grab info about last move
-        Move lastMove = registeredMoves.get(registeredMoves.size() - 1);
-        int lastOldIdx = lastMove.getOldSqr();
-        int lastNewIdx = lastMove.getNewSqr();
-        // Check if current pawn move was a diagonal which captured nothing
-        ArrayList<Integer> fourDiagonalDirections = new ArrayList<Integer>();
-        fourDiagonalDirections.add(dirToCompassRoseDirHM.get("noWe"));
-        fourDiagonalDirections.add(dirToCompassRoseDirHM.get("soWe"));
-        fourDiagonalDirections.add(dirToCompassRoseDirHM.get("soEa"));
-        fourDiagonalDirections.add(dirToCompassRoseDirHM.get("noEa"));
-        int currentMoveDirection = move.getNewSqr() - move.getOldSqr();
-        boolean ifCurrentMoveWasDiagonal = fourDiagonalDirections.contains(currentMoveDirection);
-        // Check if last move was a pawn move forward two and digaonal capture is empty
-        boolean ifLastMoveForwardTwo = Math.abs(lastNewIdx - lastOldIdx) == 16;
-        boolean ifSquareCapureIsEmpty = capturedPieceIfAny == Piece.NONE;
-        if (ifCurrentMoveWasDiagonal && ifLastMoveForwardTwo && ifSquareCapureIsEmpty) {
+       
+       
             // en passant
             // remove pawn
             // Captured pawn idx
             int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 1).getNewSqr();
+            if ((move.getPieceMoved() & Piece.COLOR_MASK) == Piece.WHITE){
+                capturedPawnIdx += dirToCompassRoseDirHM.get("sout");
+            } else {
+                capturedPawnIdx += dirToCompassRoseDirHM.get("nort");
+            }
+                 
             board[capturedPawnIdx] = Piece.NONE;
 
-        }
+        
 
     }
 

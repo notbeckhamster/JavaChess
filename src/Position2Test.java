@@ -2,6 +2,8 @@ package src;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.PriorityQueue;
+
 import org.junit.*;
 
 public class Position2Test {
@@ -18,14 +20,12 @@ public class Position2Test {
     @Test
     public void testDepth1() {
         depth = 1;
-        board = new Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/4P3/p1N2Q1p/RPPBBPPP/4K2R b Kkq - 0 1");
         Assert.assertEquals(48, perft(1));
     }
 
     @Test
     public void testDepth2() {
         depth = 2;
-        board = new Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/4P3/p1N2Q1p/1PPBBPPP/R3K2R w KQkq - 0 1");
         Assert.assertEquals(2039, perft(2));
 
     }
@@ -33,8 +33,7 @@ public class Position2Test {
     @Test
     public void testDepth3() {
         depth = 3;
-        board = new Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/P1N2Q1p/1PPBBPPP/R3K2R b KQkq - 0 1");
-        Assert.assertEquals(97862, perft(3));
+     Assert.assertEquals(97862, perft(3));
     }
 
     @Test
@@ -44,7 +43,7 @@ public class Position2Test {
     }
 
 
-
+  
     public int perft(int depth) {
 
         if (depth == 0)
@@ -57,9 +56,7 @@ public class Position2Test {
             int nodesAtMove = perft(depth - 1);
             nodes += nodesAtMove;
             board.unmakeMove(move, false);
-            if (depth == this.depth)
-                System.out.println(translateMoveToString(move) + ": " + nodesAtMove);
-
+           
         }
 
         return nodes;
@@ -68,7 +65,6 @@ public class Position2Test {
     public Collection<Move> genAllPseudoLegalMoves(){
 
         Collection<Move> result = new ArrayList<Move>();
-        int[] boardArr = board.getBoardArray();
         ArrayList<Integer>[] piecesArr = board.getWhiteToMove() ? board.getWhitePieceArr() : board.getBlackPieceArr();
 
         for (int i = 1; i<=6; i++){
