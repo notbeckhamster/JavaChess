@@ -49,15 +49,19 @@ public class Board {
 
         initBoard();
     }
+    
     public ArrayList<Integer>[] getWhitePieceArr(){
         return whitePieceArr;
     }
+    
     public ArrayList<Integer>[] getBlackPieceArr(){
         return blackPieceArr;
     }
+    
     public boolean ifWhiteIsToMove(){
         return whiteToMove;
     }
+    
     public void initBoard() {
         // Set up piece lists
         whitePieceArr[Piece.PAWN] = whitePawnSquares;
@@ -109,7 +113,8 @@ public class Board {
             }
         }
   // set up board
-        setBoardFromFEN("rnbqkbnr/pp1pppp1/7p/1Pp5/8/8/P1PPPPPP/RNBQKBNR w KQkq c6 0 1");
+        String defaultPos = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        setBoardFromFEN(defaultPos);
        
          setPieceLists();
     }
@@ -117,6 +122,7 @@ public class Board {
     public ArrayList<Move> getRegisteredMoves() {
         return registeredMoves;
     }
+    
     public void setPieceLists(){
         for (int i = 0; i < 64; i++) {
             int piece = board[i];
@@ -132,7 +138,7 @@ public class Board {
         setAttackedSquares(Piece.BLACK);
     }
 
-    public void updatePieceList(){
+    public void updatePieceList(Move move, boolean ifAddingMove){
         for (int i = 1; i < blackPieceArr.length; i++) {
             blackPieceArr[i].clear();
             whitePieceArr[i].clear();
@@ -209,7 +215,7 @@ public class Board {
             }
         }
                 
-        updatePieceList();
+        updatePieceList(move, true);
         //Update white to move
         whiteToMove = !whiteToMove;
     }
@@ -265,7 +271,7 @@ public class Board {
             }
         }
         registeredMoves.remove(move);
-         updatePieceList();
+         updatePieceList(move, false);
          whiteToMove = !whiteToMove;
     }
 

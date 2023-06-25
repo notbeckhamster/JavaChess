@@ -41,6 +41,12 @@ public class PositionTest {
         Assert.assertEquals(197281, perft(4));
     }
 
+    @Test
+    public void testDepth5() {
+        depth = 5;
+        Assert.assertEquals(4865609, perft(5));
+    }
+
     public int perft(int depth) {
 
         if (depth == 0)
@@ -71,7 +77,7 @@ public class PositionTest {
             ArrayList<Integer> pieces = piecesArr[i];
             for (int j = 0; j<pieces.size(); j++){
                 int position = pieces.get(j);
-                result.addAll(board.generateValidMoves(position/8, position%8, boardArr[position]));
+                result.addAll(board.validMoves(position/8, position%8));
             }
       
         }
