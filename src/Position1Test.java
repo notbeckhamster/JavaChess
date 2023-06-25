@@ -70,7 +70,6 @@ public class Position1Test {
     public Collection<Move> genAllPseudoLegalMoves(){
 
         Collection<Move> result = new ArrayList<Move>();
-        int[] boardArr = board.getBoardArray();
         ArrayList<Integer>[] piecesArr = board.getWhiteToMove() ? board.getWhitePieceArr() : board.getBlackPieceArr();
 
         for (int i = 1; i<=6; i++){

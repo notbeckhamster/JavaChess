@@ -1,11 +1,8 @@
 package src;
 
-import java.awt.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 
 public class Board {
     private int[] board = new int[64];
@@ -25,6 +22,7 @@ public class Board {
     private ArrayList<Integer> whiteBishopSquares = new ArrayList<Integer>();
     private ArrayList<Integer> whiteQueenSquares = new ArrayList<Integer>();
     private ArrayList<Integer> whiteKingSquares = new ArrayList<Integer>();
+    @SuppressWarnings("unchecked")
     private ArrayList<Integer>[] whitePieceArr = new ArrayList[7];
     private ArrayList<Integer> blackPawnSquares = new ArrayList<Integer>();
     private ArrayList<Integer> blackRookSquares = new ArrayList<Integer>();
@@ -32,6 +30,7 @@ public class Board {
     private ArrayList<Integer> blackBishopSquares = new ArrayList<Integer>();
     private ArrayList<Integer> blackQueenSquares = new ArrayList<Integer>();
     private ArrayList<Integer> blackKingSquares = new ArrayList<Integer>();
+    @SuppressWarnings("unchecked")
     private ArrayList<Integer>[] blackPieceArr = new ArrayList[7];
     private boolean[] whiteAttackingSquares = new boolean[64];
     private boolean[] blackAttackingSquares = new boolean[64];
@@ -48,7 +47,7 @@ public class Board {
         initBoard();
         // set up board
         String defaultPos = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        setBoardFromFEN("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1pB1P3/2N2Q1p/PPPB1PPP/R3K2R b KQkq - 0 1");
+        setBoardFromFEN(defaultPos);
     }
 
     public Board(String fen) {
@@ -450,18 +449,13 @@ public class Board {
         }
         return false;
     }
-
+   
     public Collection<Move> generatePawnAttacks(int rank, int file) {
         ArrayList<Move> moves = new ArrayList<Move>();
         int currIdx = 8 * rank + file;
-        int direction = 0;
+       
         int piece = board[currIdx];
-        // Set the direction based on color
-        if (Piece.isColor(piece, Piece.WHITE)) {
-            direction = dirToCompassRoseDirHM.get("nort");
-        } else {
-            direction = dirToCompassRoseDirHM.get("sout");
-        }
+     
 
         // Add the diagonal moves if there is an enemy piece
         String leftDirectionKey = Piece.isColor(piece, Piece.WHITE) ? "noWe" : "soWe";

@@ -3,8 +3,6 @@ package src;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
-
-import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
 public class TopPanel extends JPanel {

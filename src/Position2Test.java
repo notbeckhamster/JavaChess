@@ -2,43 +2,36 @@ package src;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.PriorityQueue;
-
 import org.junit.*;
 
 public class Position2Test {
     private Board board = new Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - ");
-    private int depth = 0;
+
 
     @Test
     public void testDepth0() {
-        depth = 0;
         Assert.assertEquals(1, perft(0));
 
     }
 
     @Test
     public void testDepth1() {
-        depth = 1;
         Assert.assertEquals(48, perft(1));
     }
 
     @Test
     public void testDepth2() {
-        depth = 2;
         Assert.assertEquals(2039, perft(2));
 
     }
 
     @Test
     public void testDepth3() {
-        depth = 3;
      Assert.assertEquals(97862, perft(3));
     }
 
     @Test
     public void testDepth4() {
-        depth = 4;
         Assert.assertEquals(4085603, perft(4));
     }
 
