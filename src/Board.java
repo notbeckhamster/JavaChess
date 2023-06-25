@@ -109,7 +109,7 @@ public class Board {
             }
         }
   // set up board
-        setBoardFromFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        setBoardFromFEN("rnbqkbnr/pp1pppp1/7p/1Pp5/8/8/P1PPPPPP/RNBQKBNR w KQkq c6 0 1");
        
          setPieceLists();
     }
@@ -808,9 +808,9 @@ public class Board {
             int rankIdx = enPassantSquare.charAt(1) - '1';
             int enPassantSquareIdx = 8 * rankIdx + fileIdx;
             if (whiteToMove){
-                registeredMoves.add(new Move(enPassantSquareIdx+2*dirToCompassRoseDirHM.get("nort"), enPassantSquareIdx+dirToCompassRoseDirHM.get("sout"), Piece.PAWN | Piece.BLACK , Piece.NONE, Move.ENPASSANT));
+                registeredMoves.add(new Move(enPassantSquareIdx+dirToCompassRoseDirHM.get("nort"), enPassantSquareIdx+dirToCompassRoseDirHM.get("sout"), Piece.PAWN | Piece.BLACK , Piece.NONE, Move.ENPASSANT));
         }   else {
-                registeredMoves.add(new Move(enPassantSquareIdx+2*dirToCompassRoseDirHM.get("sout"), enPassantSquareIdx-dirToCompassRoseDirHM.get("nort"), Piece.PAWN | Piece.WHITE , Piece.NONE, Move.ENPASSANT));
+                registeredMoves.add(new Move(enPassantSquareIdx+dirToCompassRoseDirHM.get("sout"), enPassantSquareIdx-dirToCompassRoseDirHM.get("nort"), Piece.PAWN | Piece.WHITE , Piece.NONE, Move.ENPASSANT));
             }
         }
 

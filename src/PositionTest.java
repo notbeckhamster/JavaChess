@@ -35,6 +35,12 @@ public class PositionTest {
         Assert.assertEquals(8902, perft(3));
     }
 
+    @Test
+    public void testDepth4() {
+        depth = 4;
+        Assert.assertEquals(197281, perft(4));
+    }
+
     public int perft(int depth) {
 
         if (depth == 0)
