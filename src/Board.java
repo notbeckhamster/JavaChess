@@ -48,7 +48,7 @@ public class Board {
         initBoard();
         // set up board
         String defaultPos = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        setBoardFromFEN(defaultPos);
+        setBoardFromFEN("r3k3/p1ppqpbr/bn2Pnp1/4N3/Pp2P3/2N2Q1p/1PPBBPPP/R3K2R b KQq - 0 1");
     }
 
     public Board(String fen) {
@@ -176,10 +176,9 @@ public class Board {
                 piecePanel.getPiecePanels()[newIdx].setPiece(move.getPieceMoved());
 
         } else if (move.getFlags() == Move.PROMOTION) {
-
+            board[newIdx] = move.getPromoPiece();
             if (ifUpdateGUI)
                 piecePanel.getPiecePanels()[newIdx].setPiece(board[newIdx]);
-            board[newIdx] = (board[newIdx] & Piece.COLOR_MASK) | Piece.QUEEN;
 
         } else if (move.getFlags() == Move.ENPASSANT) {
 
@@ -325,12 +324,12 @@ public class Board {
 
     }
 
-    public Collection<Move> validMoves(int rank, int file) {
+    public Collection<Move> validMoves(int rank, int file, boolean ifForGUI) {
         int piece = board[rank * 8 + file];
         // Generate board showing what is under attack
         setAttackedSquares(piece & Piece.COLOR_MASK);
         // Generate moves
-        Collection<Move> moves = generateValidMoves(rank, file, piece);
+        Collection<Move> moves = generateValidMoves(rank, file, piece, ifForGUI);
         // Filter out moves that leave king in check
         Collection<Move> movesCopy = new ArrayList<Move>(moves);
         for (Move eachMove : movesCopy) {
@@ -340,7 +339,6 @@ public class Board {
             }
             unmakeMove(eachMove, false);
         }
-        // Testing so i can see the unmake working.
         return moves;
 
     }
@@ -362,13 +360,13 @@ public class Board {
         return attackedSquares[idx];
     }
 
-    public Collection<Move> generateValidMoves(int rank, int file, int piece) {
+    public Collection<Move> generateValidMoves(int rank, int file, int piece, boolean ifForGUI) {
         if (isSlidingPiece(piece) == true) {
             return generateSlidingMoves(rank, file, piece);
         } else if ((piece & Piece.PIECE_MASK) == Piece.KNIGHT) {
             return generateKnightMoves(rank, file);
         } else if ((piece & Piece.PIECE_MASK) == Piece.PAWN) {
-            return generatePawnMoves(rank, file);
+            return generatePawnMoves(rank, file, ifForGUI);
         } else if ((piece & Piece.PIECE_MASK) == Piece.KING) {
             return generateKingMoves(rank, file);
         } else {
@@ -494,7 +492,7 @@ public class Board {
 
     }
 
-    public Collection<Move> generatePawnMoves(int rank, int file) {
+    public Collection<Move> generatePawnMoves(int rank, int file, boolean ifForGUI) {
         ArrayList<Move> moves = new ArrayList<Move>();
         int currIdx = 8 * rank + file;
         int direction = 0;
@@ -509,7 +507,30 @@ public class Board {
         // Add the forward move if empty
         int idxOneMoveForward = currIdx + direction;
         if (isOnBoard(idxOneMoveForward) == true && board[idxOneMoveForward] == Piece.NONE) {
-            moves.add(new Move(currIdx, idxOneMoveForward, piece, Piece.NONE, Move.NORMAL));
+
+            int moveType = (idxOneMoveForward / 8 == 0 || idxOneMoveForward / 8 == 7) ? Move.PROMOTION : Move.NORMAL;
+            if (moveType == Move.NORMAL) {
+                moves.add(new Move(currIdx, idxOneMoveForward, piece, board[idxOneMoveForward], moveType));
+            } else {
+                Move queenPromoMove = new Move(currIdx, idxOneMoveForward, piece, board[idxOneMoveForward], moveType);
+                queenPromoMove.setPromoPiece(Piece.QUEEN | (piece & Piece.COLOR_MASK));
+                moves.add(queenPromoMove);
+                if (ifForGUI == false) {
+                    Move knightPromoMove = new Move(currIdx, idxOneMoveForward, piece, board[idxOneMoveForward],
+                            moveType);
+                    knightPromoMove.setPromoPiece(Piece.KNIGHT | (piece & Piece.COLOR_MASK));
+                    moves.add(knightPromoMove);
+                    Move rookPromoMove = new Move(currIdx, idxOneMoveForward, piece, board[idxOneMoveForward],
+                            moveType);
+                    rookPromoMove.setPromoPiece(Piece.ROOK | (piece & Piece.COLOR_MASK));
+                    moves.add(rookPromoMove);
+                    Move bishopPromoMove = new Move(currIdx, idxOneMoveForward, piece, board[idxOneMoveForward],
+                            moveType);
+                    bishopPromoMove.setPromoPiece(Piece.BISHOP | (piece & Piece.COLOR_MASK));
+                    moves.add(bishopPromoMove);
+
+                }
+            }
         }
 
         // Add the starting two move forward if on starting rank
@@ -528,18 +549,56 @@ public class Board {
 
         int leftCaptureSqr = currIdx + dirToCompassRoseDirHM.get(leftDirectionKey);
         int rightCaptureSqr = currIdx + dirToCompassRoseDirHM.get(rightDirectionKey);
+
         // Check captures are moves on the board
         int numToEdgeLeft = dirToNumToEdgeHM.get(leftDirectionKey)[8 * rank + file];
         int numToEdgeRight = dirToNumToEdgeHM.get(rightDirectionKey)[8 * rank + file];
         if (isOnBoard(leftCaptureSqr) && numToEdgeLeft > 0 && board[leftCaptureSqr] != Piece.NONE
                 && Piece.isColor(piece, board[leftCaptureSqr] & Piece.COLOR_MASK) == false) {
-            moves.add(new Move(currIdx, leftCaptureSqr, piece, board[leftCaptureSqr],
-                    (leftCaptureSqr / 8 == 0 || leftCaptureSqr / 8 == 7) ? Move.PROMOTION : Move.NORMAL));
+            int moveType = (leftCaptureSqr / 8 == 0 || leftCaptureSqr / 8 == 7) ? Move.PROMOTION : Move.NORMAL;
+            if (moveType == Move.NORMAL) {
+                moves.add(new Move(currIdx, leftCaptureSqr, piece, board[leftCaptureSqr], moveType));
+            } else {
+                Move queenPromoMove = new Move(currIdx, leftCaptureSqr, piece, board[leftCaptureSqr], moveType);
+                queenPromoMove.setPromoPiece(Piece.QUEEN | (piece & Piece.COLOR_MASK));
+                moves.add(queenPromoMove);
+                if (ifForGUI == false) {
+                    Move knightPromoMove = new Move(currIdx, leftCaptureSqr, piece, board[leftCaptureSqr], moveType);
+                    knightPromoMove.setPromoPiece(Piece.KNIGHT | (piece & Piece.COLOR_MASK));
+                    moves.add(knightPromoMove);
+                    Move rookPromoMove = new Move(currIdx, leftCaptureSqr, piece, board[leftCaptureSqr], moveType);
+                    rookPromoMove.setPromoPiece(Piece.ROOK | (piece & Piece.COLOR_MASK));
+                    moves.add(rookPromoMove);
+                    Move bishopPromoMove = new Move(currIdx, leftCaptureSqr, piece, board[leftCaptureSqr], moveType);
+                    bishopPromoMove.setPromoPiece(Piece.BISHOP | (piece & Piece.COLOR_MASK));
+                    moves.add(bishopPromoMove);
+
+                }
+            }
+
         }
         if (isOnBoard(rightCaptureSqr) && numToEdgeRight > 0 && board[rightCaptureSqr] != Piece.NONE
                 && Piece.isColor(piece, board[rightCaptureSqr] & Piece.COLOR_MASK) == false) {
-            moves.add(new Move(currIdx, rightCaptureSqr, piece, board[rightCaptureSqr],
-                    (rightCaptureSqr / 8 == 0 || rightCaptureSqr / 8 == 7) ? Move.PROMOTION : Move.NORMAL));
+            int moveType = (rightCaptureSqr / 8 == 0 || rightCaptureSqr / 8 == 7) ? Move.PROMOTION : Move.NORMAL;
+            if (moveType == Move.NORMAL) {
+                moves.add(new Move(currIdx, rightCaptureSqr, piece, board[rightCaptureSqr], moveType));
+            } else {
+                Move queenPromoMove = new Move(currIdx, rightCaptureSqr, piece, board[rightCaptureSqr], moveType);
+                queenPromoMove.setPromoPiece(Piece.QUEEN | (piece & Piece.COLOR_MASK));
+                moves.add(queenPromoMove);
+                if (ifForGUI == false) {
+                    Move knightPromoMove = new Move(currIdx, rightCaptureSqr, piece, board[rightCaptureSqr], moveType);
+                    knightPromoMove.setPromoPiece(Piece.KNIGHT | (piece & Piece.COLOR_MASK));
+                    moves.add(knightPromoMove);
+                    Move rookPromoMove = new Move(currIdx, rightCaptureSqr, piece, board[rightCaptureSqr], moveType);
+                    rookPromoMove.setPromoPiece(Piece.ROOK | (piece & Piece.COLOR_MASK));
+                    moves.add(rookPromoMove);
+                    Move bishopPromoMove = new Move(currIdx, rightCaptureSqr, piece, board[rightCaptureSqr], moveType);
+                    bishopPromoMove.setPromoPiece(Piece.BISHOP | (piece & Piece.COLOR_MASK));
+                    moves.add(bishopPromoMove);
+
+                }
+            }
         }
 
         // Check if enpassant is valid move
@@ -698,11 +757,12 @@ public class Board {
                 ifRightCastleValid = false;
 
         }
-        // Check the right rook is present and hasnt moved
+        // Check the right rook if present it hasnt moved or the rook isnt there
         if ((board[currIdx + 3] & Piece.PIECE_MASK) == Piece.ROOK
                 && (board[currIdx + 3] & Piece.MOVED_MASK) == Piece.MOVED)
             ifRightCastleValid = false;
-
+        if ((board[currIdx + 3] & Piece.PIECE_MASK) != Piece.ROOK)
+            ifRightCastleValid = false;
         // Determine if king can castle on the left side of the board
         boolean ifLeftCastleValid = queenSideCastle;
         // Check space is clear on the left side

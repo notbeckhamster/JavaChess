@@ -18,12 +18,14 @@ public class Position2Test {
     @Test
     public void testDepth1() {
         depth = 1;
+        board = new Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/4P3/p1N2Q1p/RPPBBPPP/4K2R b Kkq - 0 1");
         Assert.assertEquals(48, perft(1));
     }
 
     @Test
     public void testDepth2() {
         depth = 2;
+        board = new Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/4P3/p1N2Q1p/1PPBBPPP/R3K2R w KQkq - 0 1");
         Assert.assertEquals(2039, perft(2));
 
     }
@@ -31,6 +33,7 @@ public class Position2Test {
     @Test
     public void testDepth3() {
         depth = 3;
+        board = new Board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/P1N2Q1p/1PPBBPPP/R3K2R b KQkq - 0 1");
         Assert.assertEquals(97862, perft(3));
     }
 
@@ -72,7 +75,7 @@ public class Position2Test {
             ArrayList<Integer> pieces = piecesArr[i];
             for (int j = 0; j<pieces.size(); j++){
                 int position = pieces.get(j);
-                result.addAll(board.validMoves(position/8, position%8));
+                result.addAll(board.validMoves(position/8, position%8, false));
             }
       
         }

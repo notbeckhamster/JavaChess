@@ -77,7 +77,7 @@ public class Position1Test {
             ArrayList<Integer> pieces = piecesArr[i];
             for (int j = 0; j<pieces.size(); j++){
                 int position = pieces.get(j);
-                result.addAll(board.validMoves(position/8, position%8));
+                result.addAll(board.validMoves(position/8, position%8, false));
             }
       
         }

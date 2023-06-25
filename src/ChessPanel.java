@@ -14,7 +14,7 @@ import javax.swing.SwingConstants;
 public class ChessPanel extends JLayeredPane {
     protected TopPanel piecePanel;
     private Board board = new Board();
-    private boolean isWhiteTurn = true;
+    private boolean isWhiteTurn = board.getWhiteToMove();
     public ChessPanel() {
         setPreferredSize(new java.awt.Dimension(900, 900));
         BackgroundPanel background = new BackgroundPanel();
@@ -68,7 +68,7 @@ public class ChessPanel extends JLayeredPane {
                 selectedPiece = new JLabel(selectedPiece.getIcon(), SwingConstants.CENTER);
                 selectedPiece.setSize(new Dimension(100, 100));
                 //set valid moves
-                validMoves = board.validMoves(oldRank, oldFile);
+                validMoves = board.validMoves(oldRank, oldFile, true);
                 highlightValidMoves(selectedPanel);
                 highlightAttackedSquares(selectedPanel);
                 selectedPanel.setPiece(Piece.NONE);

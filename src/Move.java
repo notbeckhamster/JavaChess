@@ -12,6 +12,7 @@ public class Move {
     public final static int CASTLE = 1;
     public final static int ENPASSANT = 2;
     public final static int PROMOTION = 3;
+    private int promoPiece = Piece.NONE;
   
 
     
@@ -23,6 +24,13 @@ public class Move {
         this.flags = flags;
     }
 
+    public void setPromoPiece(int promoPiece){
+        this.promoPiece = promoPiece;
+    }
+
+    public int getPromoPiece(){
+        return promoPiece;
+    }
 
     public int getPieceMoved(){
         return pieceMoved;
