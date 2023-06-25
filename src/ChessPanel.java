@@ -15,6 +15,7 @@ public class ChessPanel extends JLayeredPane {
     protected TopPanel piecePanel;
     private Board board = new Board();
     private boolean isWhiteTurn = board.getWhiteToMove();
+    ArrayList<PiecePanel> attackedHighlights = new ArrayList<PiecePanel>();
     public ChessPanel() {
         setPreferredSize(new java.awt.Dimension(900, 900));
         BackgroundPanel background = new BackgroundPanel();
@@ -38,7 +39,22 @@ public class ChessPanel extends JLayeredPane {
     public Board getBoard(){
         return board;
     }
+     public void highlightAttackedSquares(int color){
+            boolean[] attackedSquares = board.getAttackedSquares(color);
+             for (int i = 0 ; i< attackedSquares.length; i++){
+                if (attackedSquares[i] == true){  
+                    PiecePanel panel = piecePanel.getPiecePanels()[i];
+                    attackedHighlights.add(panel);
+                    panel.setDisplayAttackedSquares(true);
+                }
+            }
+        }
+     public void resetAttackHighlights(){
+            for (PiecePanel highlightedPanel : attackedHighlights){
+                highlightedPanel.setDisplayAttackedSquares(false);
+            }
 
+    }
     private class MyMouseAdapter extends MouseAdapter {
         JLabel selectedPiece = null;
         int oldRank = -1;
@@ -47,7 +63,7 @@ public class ChessPanel extends JLayeredPane {
         ArrayList<PiecePanel> hightlights = new ArrayList<PiecePanel>();
         ArrayList<PiecePanel> validMovesPanel = new ArrayList<PiecePanel>();
         Collection<Move> validMoves=null;
-        ArrayList<PiecePanel> attackedHighlights = new ArrayList<PiecePanel>();
+        
         public void mousePressed(MouseEvent e) {
 
             if (selectedPiece == null) {
@@ -70,7 +86,7 @@ public class ChessPanel extends JLayeredPane {
                 //set valid moves
                 validMoves = board.validMoves(oldRank, oldFile, true);
                 highlightValidMoves(selectedPanel);
-                highlightAttackedSquares(selectedPanel);
+                
                 selectedPanel.setPiece(Piece.NONE);
                 int centerX = e.getPoint().x - selectedPiece.getWidth() / 2;
                 int centerY = e.getPoint().y - selectedPiece.getHeight() / 2;
@@ -100,7 +116,7 @@ public class ChessPanel extends JLayeredPane {
         }
 
         public void mouseReleased(MouseEvent e) {
-            resetAttackHighlights();
+      
                resetValidMoves();
             // If out of bounds, return the piece to the original square
             if (e.getPoint().x > 800 || e.getPoint().y > 800 || e.getPoint().x < 0 || e.getPoint().y < 0) {
@@ -193,19 +209,10 @@ public class ChessPanel extends JLayeredPane {
 
     }
 
-      private void highlightAttackedSquares(PiecePanel selectedPanel){
-            boolean[] attackedSquares = board.getAttackedSquares(selectedPanel.getPiece() & Piece.COLOR_MASK);
-             for (int i = 0 ; i< attackedSquares.length; i++){
-                if (attackedSquares[i] == true){  
-                    PiecePanel panel = piecePanel.getPiecePanels()[i];
-                    attackedHighlights.add(panel);
-                    panel.setDisplayAttackedSquares(true);
-                }
-            }
-                
+     
            
 
-    }
+    
     private void resetValidMoves(){
         for (PiecePanel panel : validMovesPanel){
             panel.setDisplayValidMoves(false);
@@ -220,12 +227,7 @@ public class ChessPanel extends JLayeredPane {
             }
 
     }
-    private void resetAttackHighlights(){
-            for (PiecePanel highlightedPanel : attackedHighlights){
-                highlightedPanel.setDisplayAttackedSquares(false);
-            }
-
-    }
+   
 
     }
 
