@@ -40,4 +40,4 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     - name: Run the Ant jar target
-        run: ant -noinput -buildfile build.xml junit
+      run: ant -noinput -buildfile build.xml junit
