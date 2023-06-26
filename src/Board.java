@@ -3,6 +3,7 @@ package src;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Stack;
 
 public class Board {
     private int[] board = new int[64];
@@ -34,7 +35,7 @@ public class Board {
     private ArrayList<Integer>[] blackPieceArr = new ArrayList[7];
     private boolean[] whiteAttackingSquares = new boolean[64];
     private boolean[] blackAttackingSquares = new boolean[64];
-    private ArrayList<Move> registeredMoves = new ArrayList<Move>();
+    private Stack<Move> registeredMoves = new Stack<Move>();
     private TopPanel piecePanel;
     private boolean whiteToMove = true;
     private boolean ifBlackKingSideCastle = true;
@@ -46,7 +47,7 @@ public class Board {
 
         initBoard();
         // set up board
-        String defaultPos = "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - ";
+        String defaultPos = "8/2p5/3p4/7r/KR3pPk/8/4P3/8 w - - 0 1";
         setBoardFromFEN(defaultPos);
     }
 
@@ -63,6 +64,11 @@ public class Board {
         return blackPieceArr;
     }
 
+    public void setIfWhiteIsToMove(boolean whiteToMove) {
+        this.whiteToMove = whiteToMove;
+    }
+
+    
     public boolean ifWhiteIsToMove() {
         return whiteToMove;
     }
@@ -119,7 +125,7 @@ public class Board {
 
     }
 
-    public ArrayList<Move> getRegisteredMoves() {
+    public Stack<Move> getRegisteredMoves() {
         return registeredMoves;
     }
 
@@ -167,7 +173,7 @@ public class Board {
         board[newIdx] = board[newIdx] | Piece.MOVED;
         board[oldIdx] = Piece.NONE;
 
-        registeredMoves.add(move);
+        registeredMoves.push(move);
 
         if (move.getFlags() == Move.NORMAL) {
 
@@ -285,7 +291,7 @@ public class Board {
                 }
             }
         }
-        registeredMoves.remove(move);
+        registeredMoves.pop();
         updatePieceList(move, false);
         whiteToMove = !whiteToMove;
     }
@@ -300,13 +306,7 @@ public class Board {
             // en passant
             // remove pawn
             // Captured pawn idx
-            int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 1).getNewSqr();
-            if ((move.getPieceMoved() & Piece.COLOR_MASK) == Piece.WHITE){
-                capturedPawnIdx += dirToCompassRoseDirHM.get("sout");
-            } else {
-                capturedPawnIdx += dirToCompassRoseDirHM.get("nort");
-            }
-                 
+            int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 2).getNewSqr();
             board[capturedPawnIdx] = Piece.NONE;
 
         
@@ -316,9 +316,10 @@ public class Board {
     public Collection<Move> validMoves(int rank, int file, boolean ifForGUI) {
         int piece = board[rank * 8 + file];
         // Generate board showing what is under attack
-        setAttackedSquares(piece & Piece.COLOR_MASK);
+        setAttackedSquares((piece & Piece.COLOR_MASK) == Piece.WHITE ? Piece.BLACK : Piece.WHITE);
         // Generate moves
         Collection<Move> moves = generateValidMoves(rank, file, piece, ifForGUI);
+        
         // Filter out moves that leave king in check
         Collection<Move> movesCopy = new ArrayList<Move>(moves);
         for (Move eachMove : movesCopy) {
@@ -372,10 +373,7 @@ public class Board {
         } else {
             blackAttackingSquares = attackedSquares;
         }
-        // Clear attacked squares
-        for (int i = 0; i < 64; i++) {
-            attackedSquares[i] = false;
-        }
+        
         // Find opposite color piece list
         ArrayList<Integer>[] selectedColorPiecesList = (color == Piece.WHITE) ? whitePieceArr : blackPieceArr;
         // Set attacked squares for king
@@ -709,12 +707,13 @@ public class Board {
             if (isOnBoard(newIdx) == false)
                 continue;
 
+            int numToEdge = dirToNumToEdgeHM.get(eachDirection)[currIdx];
             boolean ifNewSqrDifColor = (board[newIdx] & Piece.COLOR_MASK) != (piece & Piece.COLOR_MASK);
             boolean ifNewSqrEmpty = board[newIdx] == Piece.NONE;
-            if (ifNewSqrEmpty == true) {
+            if (ifNewSqrEmpty == true && numToEdge > 0) {
                 moves.add(new Move(currIdx, newIdx, piece, Piece.NONE, Move.NORMAL));
 
-            } else if (ifNewSqrDifColor == true) {
+            } else if (ifNewSqrDifColor == true && numToEdge > 0) {
                 moves.add(new Move(currIdx, newIdx, piece, board[newIdx], Move.NORMAL));
             }
 
@@ -723,8 +722,14 @@ public class Board {
         boolean kingSideCastle = color == Piece.WHITE ? ifWhiteKingSideCastle : ifBlackKingSideCastle;
         boolean queenSideCastle = color == Piece.WHITE ? ifWhiteQueenSideCastle : ifBlackQueenSideCastle;
         // Castling
+
+        
         // If king has moved dont consider castling
         if ((piece & Piece.MOVED_MASK) == Piece.MOVED)
+            return moves;
+        //If king isnt in its position then dont consider castling
+         int whereKingIdxShouldBe = color == Piece.WHITE ? 4 : 60;
+        if (currIdx != whereKingIdxShouldBe)
             return moves;
         // If king is in check dont consider castling
         if (isKingInCheck(piece & Piece.COLOR_MASK))
@@ -741,11 +746,12 @@ public class Board {
                 ifRightCastleValid = false;
 
         }
+       
         // Check the right rook if present it hasnt moved or the rook isnt there
-        if ((board[currIdx + 3] & Piece.PIECE_MASK) == Piece.ROOK
-                && (board[currIdx + 3] & Piece.MOVED_MASK) == Piece.MOVED)
+        if ((board[whereKingIdxShouldBe + 3] & Piece.PIECE_MASK) == Piece.ROOK
+                && (board[whereKingIdxShouldBe + 3] & Piece.MOVED_MASK) == Piece.MOVED)
             ifRightCastleValid = false;
-        if ((board[currIdx + 3] & Piece.PIECE_MASK) != Piece.ROOK)
+        if ((board[whereKingIdxShouldBe + 3] & Piece.PIECE_MASK) != Piece.ROOK)
             ifRightCastleValid = false;
         // Determine if king can castle on the left side of the board
         boolean ifLeftCastleValid = queenSideCastle;
@@ -758,9 +764,11 @@ public class Board {
                 ifLeftCastleValid = false;
 
         }
-        // Check the left rook hasnt moved
-        if ((board[currIdx - 4] & Piece.PIECE_MASK) == Piece.ROOK
-                && (board[currIdx - 4] & Piece.MOVED_MASK) == Piece.MOVED)
+        // Check the left rook if present it hasnt moved or the rook isnt there
+        if ((board[whereKingIdxShouldBe - 4] & Piece.PIECE_MASK) == Piece.ROOK
+                && (board[whereKingIdxShouldBe - 4] & Piece.MOVED_MASK) == Piece.MOVED)
+            ifLeftCastleValid = false;
+        if ((board[whereKingIdxShouldBe - 4] & Piece.PIECE_MASK) != Piece.ROOK)
             ifLeftCastleValid = false;
 
         // Add castle moves ifLeftCastleValid or ifRightCastleValid is true

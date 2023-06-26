@@ -6,7 +6,7 @@ import java.util.Collection;
 import org.junit.*;
 
 public class Position1Test {
-    private Board board = new Board();
+    private Board board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     private int depth = 0;
 
     @Test

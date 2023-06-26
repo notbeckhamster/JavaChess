@@ -4,55 +4,39 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.*;
 
-public class Position3Test {
-    private Board board = new Board("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - ");
+public class Position5Test {
+    private Board board = new Board("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8");
     private int depth = 0;
-
 
     @Test
     public void testDepth1() {
         depth = 1;
-        Assert.assertEquals(14, perft(1));
+        Assert.assertEquals(44, perft(1));
     }
 
     @Test
     public void testDepth2() {
         depth = 2;
-        Assert.assertEquals(191, perft(2));
+        Assert.assertEquals(1486, perft(2));
 
     }
 
     @Test
     public void testDepth3() {
         depth = 3;
-     Assert.assertEquals(2812, perft(3));
+        Assert.assertEquals(62379, perft(3));
     }
 
     @Test
     public void testDepth4() {
         depth = 4;
-        Assert.assertEquals(43238, perft(4));
+        Assert.assertEquals(2103487, perft(4));
     }
 
-    @Test
-    public void testDepth5() {
-        depth = 5;
-        Assert.assertEquals(674624, perft(5));
-    }
-
-    @Test
-    public void testDepth6() {
-        depth = 6;
-        Assert.assertEquals(11030083, perft(6));
-    }
-
-    private ArrayList<String> depth6List = new ArrayList<String>();
-    private ArrayList<String> depth5List = new ArrayList<String>();
     private ArrayList<String> depth4List = new ArrayList<String>();
     private ArrayList<String> depth3List = new ArrayList<String>();
     private ArrayList<String> depth2List = new ArrayList<String>();
-
-       public int perft(int depth) {
+        public int perft(int depth) {
 
         if (depth == 0)
             return 1;
@@ -91,7 +75,27 @@ public class Position3Test {
     }
 
     public String translateMoveToString(Move move) {
-        return translateIndexToString(move.getOldSqr()) + translateIndexToString(move.getNewSqr());
+        String promoPieceText = "";
+        if (move.getFlags() == Move.PROMOTION){
+        
+            switch (move.getPromoPiece() & Piece.PIECE_MASK){
+                case Piece.BISHOP:
+                    promoPieceText = "b";
+                    break;
+                case Piece.KNIGHT:
+                    promoPieceText = "n";
+                    break;
+                case Piece.ROOK:
+                    promoPieceText = "r";
+                    break;
+                case Piece.QUEEN:  
+                    promoPieceText = "q";
+                    break;
+
+            }
+          
+        }
+        return translateIndexToString(move.getOldSqr()) + translateIndexToString(move.getNewSqr()) + promoPieceText;
 
     }
 

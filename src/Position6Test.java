@@ -4,55 +4,42 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.*;
 
-public class Position3Test {
-    private Board board = new Board("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - ");
+public class Position6Test {
+    private Board board = new Board("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10");
     private int depth = 0;
-
 
     @Test
     public void testDepth1() {
         depth = 1;
-        Assert.assertEquals(14, perft(1));
+        Assert.assertEquals(46, perft(1));
     }
 
     @Test
     public void testDepth2() {
         depth = 2;
-        Assert.assertEquals(191, perft(2));
+        Assert.assertEquals(2079, perft(2));
 
     }
 
     @Test
     public void testDepth3() {
         depth = 3;
-     Assert.assertEquals(2812, perft(3));
+        Assert.assertEquals(89890, perft(3));
     }
 
     @Test
     public void testDepth4() {
         depth = 4;
-        Assert.assertEquals(43238, perft(4));
+        Assert.assertEquals(3894594, perft(4));
     }
 
     @Test
     public void testDepth5() {
         depth = 5;
-        Assert.assertEquals(674624, perft(5));
+        Assert.assertEquals(164075551, perft(5));
     }
 
-    @Test
-    public void testDepth6() {
-        depth = 6;
-        Assert.assertEquals(11030083, perft(6));
-    }
-
-    private ArrayList<String> depth6List = new ArrayList<String>();
-    private ArrayList<String> depth5List = new ArrayList<String>();
-    private ArrayList<String> depth4List = new ArrayList<String>();
-    private ArrayList<String> depth3List = new ArrayList<String>();
-    private ArrayList<String> depth2List = new ArrayList<String>();
-
-       public int perft(int depth) {
+    public int perft(int depth) {
 
         if (depth == 0)
             return 1;

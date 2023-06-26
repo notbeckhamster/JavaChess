@@ -14,7 +14,6 @@ import javax.swing.SwingConstants;
 public class ChessPanel extends JLayeredPane {
     protected TopPanel piecePanel;
     private Board board = new Board();
-    private boolean isWhiteTurn = board.getWhiteToMove();
     ArrayList<PiecePanel> attackedHighlights = new ArrayList<PiecePanel>();
     public ChessPanel() {
         setPreferredSize(new java.awt.Dimension(900, 900));
@@ -74,7 +73,7 @@ public class ChessPanel extends JLayeredPane {
                 oldRank = selectedPanel.getRank();
                 oldFile = selectedPanel.getFile();
                 oldPiece = selectedPanel.getPiece();
-                int turn = (isWhiteTurn ? Piece.WHITE : Piece.BLACK);
+                int turn = board.ifWhiteIsToMove() == true ? Piece.WHITE : Piece.BLACK;
                 int colorSelected = (oldPiece & Piece.COLOR_MASK);
                 if (turn != colorSelected) {
                     return;
@@ -102,7 +101,7 @@ public class ChessPanel extends JLayeredPane {
 
         public void mouseDragged(MouseEvent e) {
       
-                int turn = (isWhiteTurn ? Piece.WHITE : Piece.BLACK);
+               int turn = board.ifWhiteIsToMove() == true ? Piece.WHITE : Piece.BLACK;
                 int colorSelected = (oldPiece & Piece.COLOR_MASK);
                 if (turn != colorSelected) {
                     return;
@@ -130,7 +129,7 @@ public class ChessPanel extends JLayeredPane {
                 selectedPiece = null;
                 return;
             }
-             int turn = (isWhiteTurn ? Piece.WHITE : Piece.BLACK);
+             int turn = board.ifWhiteIsToMove() == true ? Piece.WHITE : Piece.BLACK;
                 int colorSelected = (oldPiece & Piece.COLOR_MASK);
                 if (turn != colorSelected) {
                     return;
@@ -150,7 +149,6 @@ public class ChessPanel extends JLayeredPane {
                 
                 // Make move to board 
                 board.makeMove(move, true);
-                isWhiteTurn = isWhiteTurn ? false : true;
                 //Set highlights and remove old highlights    
                 highlightSquares(selectedPanel);
                 remove(selectedPiece);
