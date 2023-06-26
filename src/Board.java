@@ -47,7 +47,7 @@ public class Board {
 
         initBoard();
         // set up board
-        String defaultPos = "8/2p5/3p4/7r/KR3pPk/8/4P3/8 w - - 0 1";
+        String defaultPos = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         setBoardFromFEN(defaultPos);
     }
 
@@ -174,7 +174,9 @@ public class Board {
         board[oldIdx] = Piece.NONE;
 
         registeredMoves.push(move);
-
+        if (ifUpdateGUI)
+            piecePanel.getPiecePanels()[oldIdx].setPiece(Piece.NONE);
+            
         if (move.getFlags() == Move.NORMAL) {
 
             if (ifUpdateGUI)
@@ -251,7 +253,7 @@ public class Board {
         board[oldIdx] = move.getPieceMoved();
         board[newIdx] = move.getPiecesAtNewSquare();
         board[newIdx] = board[newIdx] & ~Piece.MOVED_MASK;
-
+      
         if (move.getFlags() == Move.ENPASSANT) {
             int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 2).getNewSqr();
             int colorOfCapturedPawn = ((move.getPieceMoved() & Piece.COLOR_MASK) == Piece.WHITE) ? Piece.BLACK

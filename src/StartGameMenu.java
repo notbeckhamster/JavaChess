@@ -33,7 +33,7 @@ public class StartGameMenu{
             super("Play as White");
         }
         public void actionPerformed(ActionEvent e){
-         //   ChessFrame.getChessPanel().startGame(Piece.WHITE);
+            ChessFrame.getChessPanel().startMoveGenGame(Piece.WHITE);
         }
     }
     public class PlayBlackAction extends AbstractAction{

@@ -14,6 +14,9 @@ import javax.swing.SwingConstants;
 public class ChessPanel extends JLayeredPane {
     protected TopPanel piecePanel;
     private Board board = new Board();
+    private MoveGen moveGen = new MoveGen(board);
+    private boolean ifUsingMoveGen = false;
+    private int colorOfPlayer = Piece.WHITE;
     ArrayList<PiecePanel> attackedHighlights = new ArrayList<PiecePanel>();
     public ChessPanel() {
         setPreferredSize(new java.awt.Dimension(900, 900));
@@ -28,7 +31,10 @@ public class ChessPanel extends JLayeredPane {
         addMouseListener(myMouseAdapter);
 
     }
-
+    public void startMoveGenGame(int color){
+        ifUsingMoveGen = true;
+        colorOfPlayer = color;
+    }
     public JLayeredPane getMainLayeredPane() {
         return this;
     }
@@ -78,6 +84,11 @@ public class ChessPanel extends JLayeredPane {
                 if (turn != colorSelected) {
                     return;
                 }
+                if (ifUsingMoveGen == true){
+                    if (colorOfPlayer != colorSelected){
+                        return;
+                    }
+                }
                 // Copy the JLabelPiece to the selectedPiece
                 selectedPiece = selectedPanel.getJLabelPiece();
                 selectedPiece = new JLabel(selectedPiece.getIcon(), SwingConstants.CENTER);
@@ -106,6 +117,11 @@ public class ChessPanel extends JLayeredPane {
                 if (turn != colorSelected) {
                     return;
                 }
+                 if (ifUsingMoveGen == true){
+                    if (colorOfPlayer != colorSelected){
+                        return;
+                    }
+                }
             int centerX = e.getPoint().x - selectedPiece.getWidth() / 2;
             int centerY = e.getPoint().y - selectedPiece.getHeight() / 2;
             selectedPiece.setLocation(centerX, centerY);
@@ -133,6 +149,11 @@ public class ChessPanel extends JLayeredPane {
                 int colorSelected = (oldPiece & Piece.COLOR_MASK);
                 if (turn != colorSelected) {
                     return;
+                }
+                if (ifUsingMoveGen == true){
+                    if (colorOfPlayer != colorSelected){
+                        return;
+                    }
                 }
             PiecePanel selectedPanel = (PiecePanel) piecePanel.getComponentAt(e.getPoint());
             // Check if moving into square empty or occupied by enemy
@@ -166,6 +187,13 @@ public class ChessPanel extends JLayeredPane {
             
             getMainLayeredPane().revalidate();
             getMainLayeredPane().repaint();
+
+            if (ifUsingMoveGen == true){
+                     turn = board.ifWhiteIsToMove() == true ? Piece.WHITE : Piece.BLACK;
+                     if (turn != colorOfPlayer){
+                         moveGen.playResponse();
+                     }
+                }
         }
 
         private void returnPiece() {
