@@ -6,7 +6,7 @@ public class Move {
     private int newSqrt;
     private int pieceMoved;
     private int pieceAtNewSquare;
-    private int flags;
+    private int flags = 0;
     public final static int NONE = -1;
     public final static int NORMAL = 0;
     public final static int CASTLE = 1;

@@ -1,5 +1,6 @@
 package src;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -144,8 +145,77 @@ public class Board {
         setAttackedSquares(Piece.BLACK);
     }
 
-    public void updatePieceList(Move move, boolean ifAddingMove) {
-        for (int i = 1; i < blackPieceArr.length; i++) {
+    public void updatePieceList(Move move) {
+
+        int piece = move.getPieceMoved() & Piece.PIECE_MASK;
+        int color = move.getPieceMoved() & Piece.COLOR_MASK;
+      //  int oppColor = move.getPiecesAtNewSquare() & Piece.COLOR_MASK;
+        ArrayList<Integer> pieceListForPieceMoved = color == Piece.WHITE ? whitePieceArr[piece] : blackPieceArr[piece];
+
+        // Remove old square idx
+        pieceListForPieceMoved.remove((Integer) move.getOldSqr());
+        int flag = move.getFlags();
+
+        // Add new square idx
+        if (flag == Move.NORMAL){
+            //seems this doesnt even work....
+         pieceListForPieceMoved.add(move.getNewSqr());
+        } else if (flag == Move.PROMOTION){
+            int promoPiece = move.getPromoPiece() & Piece.PIECE_MASK;
+            pieceListForPieceMoved = color == Piece.WHITE ? whitePieceArr[promoPiece] : blackPieceArr[promoPiece];
+            pieceListForPieceMoved.add(move.getNewSqr());
+        } else if (flag == Move.ENPASSANT){
+            pieceListForPieceMoved.add(move.getNewSqr());
+            // Captured pawn idx
+            //one or 2 ? idk
+            int capturedPawnIdx = registeredMoves.get(registeredMoves.size() -1).getNewSqr();
+            //Remove it 
+            ArrayList<Integer> capturedPawnList = color == Piece.WHITE ? blackPieceArr[Piece.PAWN] : whitePieceArr[Piece.PAWN];
+            capturedPawnList.remove((Integer)capturedPawnIdx);
+        } else if (flag == Move.CASTLE){
+            pieceListForPieceMoved.add(move.getNewSqr());
+            int oldRookIdx = -1;
+            int newRookIdx = -1;
+             if (move.getNewSqr() == 2) {
+
+                newRookIdx = 3;
+                oldRookIdx = 0;
+        
+
+            } else if (move.getNewSqr() == 6) {
+
+                newRookIdx = 5;
+                oldRookIdx = 7;
+            
+
+            } else if (move.getNewSqr() == 58) {
+
+                newRookIdx  = 59;
+                oldRookIdx = 56;
+             
+
+            } else if (move.getNewSqr() == 62) {
+
+                newRookIdx = 61;
+                oldRookIdx = 63;
+              
+
+            }
+            ArrayList<Integer> rookList = color == Piece.WHITE ? whitePieceArr[Piece.ROOK] : blackPieceArr[Piece.ROOK];
+            rookList.remove((Integer)oldRookIdx);
+            rookList.add(newRookIdx);
+        }
+
+       
+
+        setAttackedSquares(Piece.WHITE);
+        setAttackedSquares(Piece.BLACK);
+
+    }
+
+     public void updatePieceListUnmake(Move move) {
+
+         for (int i = 1; i < blackPieceArr.length; i++) {
             blackPieceArr[i].clear();
             whitePieceArr[i].clear();
         }
@@ -165,13 +235,18 @@ public class Board {
 
     }
 
+
     public void makeMove(Move move, boolean ifUpdateGUI) {
         int oldIdx = move.getOldSqr();
         int newIdx = move.getNewSqr();
 
+        //Update Board
         board[newIdx] = move.getPieceMoved();
         board[newIdx] = board[newIdx] | Piece.MOVED;
         board[oldIdx] = Piece.NONE;
+
+        //Update Piece Lists
+        updatePieceList(move);
 
         registeredMoves.push(move);
         if (ifUpdateGUI)
@@ -240,7 +315,7 @@ public class Board {
             }
         }
 
-        updatePieceList(move, true);
+   
         // Update white to move
         whiteToMove = !whiteToMove;
     }
@@ -254,6 +329,8 @@ public class Board {
         board[newIdx] = move.getPiecesAtNewSquare();
         board[newIdx] = board[newIdx] & ~Piece.MOVED_MASK;
       
+        updatePieceListUnmake(move);
+
         if (move.getFlags() == Move.ENPASSANT) {
             int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 2).getNewSqr();
             int colorOfCapturedPawn = ((move.getPieceMoved() & Piece.COLOR_MASK) == Piece.WHITE) ? Piece.BLACK
@@ -294,7 +371,6 @@ public class Board {
             }
         }
         registeredMoves.pop();
-        updatePieceList(move, false);
         whiteToMove = !whiteToMove;
     }
 

@@ -46,7 +46,8 @@ public class Position1Test {
         depth = 5;
         Assert.assertEquals(4865609, perft(5));
     }
-
+    private ArrayList<String> moveList2 = new ArrayList<String>();
+    private ArrayList<String> moveList = new ArrayList<String>();
     public int perft(int depth) {
 
         if (depth == 0)
@@ -55,17 +56,20 @@ public class Position1Test {
         int nodes = 0;
         Collection<Move> moves = genAllPseudoLegalMoves();
         for (Move move : moves) {
+
             board.makeMove(move, false);
             int nodesAtMove = perft(depth - 1);
             nodes += nodesAtMove;
             board.unmakeMove(move, false);
-            if (depth == this.depth)
+            if (this.depth == depth)
                 System.out.println(translateMoveToString(move) + ": " + nodesAtMove);
 
         }
 
         return nodes;
     }
+
+    
 
     public Collection<Move> genAllPseudoLegalMoves(){
 
