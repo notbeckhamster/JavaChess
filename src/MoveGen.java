@@ -17,7 +17,6 @@ public class MoveGen {
     }
 
     public Move getRandomMove(){
-        ArrayList<Integer>[] pieceList = board.getBlackPieceArr();
         //Generate all possible moves
         ArrayList<Move> allMoves = genAllPseudoLegalMoves();
         //Choose a random move

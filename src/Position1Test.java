@@ -77,7 +77,7 @@ public class Position1Test {
         ArrayList<Integer>[] piecesArr = board.getWhiteToMove() ? board.getWhitePieceArr() : board.getBlackPieceArr();
 
         for (int i = 1; i<=6; i++){
-            ArrayList<Integer> pieces = piecesArr[i];
+            ArrayList<Integer> pieces = (ArrayList<Integer>)piecesArr[i].clone();
             for (int j = 0; j<pieces.size(); j++){
                 int position = pieces.get(j);
                 result.addAll(board.validMoves(position/8, position%8, false));

@@ -150,32 +150,48 @@ public class Board {
         int piece = move.getPieceMoved() & Piece.PIECE_MASK;
         int color = move.getPieceMoved() & Piece.COLOR_MASK;
       //  int oppColor = move.getPiecesAtNewSquare() & Piece.COLOR_MASK;
-        ArrayList<Integer> pieceListForPieceMoved = color == Piece.WHITE ? whitePieceArr[piece] : blackPieceArr[piece];
+        ArrayList<Integer>[] pieceArr = color == Piece.WHITE ? whitePieceArr : blackPieceArr;
+  
+        ArrayList<Integer> pieceListForPieceMoved = pieceArr[piece];
 
         // Remove old square idx
         pieceListForPieceMoved.remove((Integer) move.getOldSqr());
         int flag = move.getFlags();
 
-        // Add new square idx
+    
+
+        
         if (flag == Move.NORMAL){
-            //seems this doesnt even work....
-         pieceListForPieceMoved.add(move.getNewSqr());
+            //add new sqr
+            pieceListForPieceMoved.add((Integer) move.getNewSqr());
+            //Remove captured piece if piece captured 
+            if (move.getPiecesAtNewSquare() != Piece.NONE) {
+            ArrayList<Integer>[] oppPieceList = color == Piece.WHITE ? blackPieceArr : whitePieceArr; 
+            oppPieceList[move.getPiecesAtNewSquare() & Piece.PIECE_MASK].remove((Integer)move.getNewSqr());
+            }
         } else if (flag == Move.PROMOTION){
+            //add new sqr
             int promoPiece = move.getPromoPiece() & Piece.PIECE_MASK;
             pieceListForPieceMoved = color == Piece.WHITE ? whitePieceArr[promoPiece] : blackPieceArr[promoPiece];
-            pieceListForPieceMoved.add(move.getNewSqr());
+            pieceListForPieceMoved.add((Integer)move.getNewSqr());
+            
+            if (move.getPiecesAtNewSquare() != Piece.NONE) {
+                //Remove captured piece
+                ArrayList<Integer>[] oppPieceList = color == Piece.WHITE ? blackPieceArr : whitePieceArr; 
+                oppPieceList[move.getPiecesAtNewSquare() & Piece.PIECE_MASK].remove((Integer)move.getNewSqr());
+            }
         } else if (flag == Move.ENPASSANT){
-            pieceListForPieceMoved.add(move.getNewSqr());
+            //add new sqr
+            pieceListForPieceMoved.add((Integer)move.getNewSqr());
             // Captured pawn idx
-            //one or 2 ? idk
-            int capturedPawnIdx = registeredMoves.get(registeredMoves.size() -1).getNewSqr();
+            int capturedPawnIdx = registeredMoves.get(registeredMoves.size() -2).getNewSqr();
             //Remove it 
             ArrayList<Integer> capturedPawnList = color == Piece.WHITE ? blackPieceArr[Piece.PAWN] : whitePieceArr[Piece.PAWN];
             capturedPawnList.remove((Integer)capturedPawnIdx);
         } else if (flag == Move.CASTLE){
-            pieceListForPieceMoved.add(move.getNewSqr());
+            pieceListForPieceMoved.add((Integer)move.getNewSqr());
             int oldRookIdx = -1;
-            int newRookIdx = -1;
+            int newRookIdx = -1;        
              if (move.getNewSqr() == 2) {
 
                 newRookIdx = 3;
@@ -203,7 +219,7 @@ public class Board {
             }
             ArrayList<Integer> rookList = color == Piece.WHITE ? whitePieceArr[Piece.ROOK] : blackPieceArr[Piece.ROOK];
             rookList.remove((Integer)oldRookIdx);
-            rookList.add(newRookIdx);
+            rookList.add((Integer)newRookIdx);
         }
 
        
@@ -213,27 +229,93 @@ public class Board {
 
     }
 
+
+    /** repeat of update piece list swapped add and remove */
      public void updatePieceListUnmake(Move move) {
 
-         for (int i = 1; i < blackPieceArr.length; i++) {
-            blackPieceArr[i].clear();
-            whitePieceArr[i].clear();
-        }
-        for (int i = 0; i < 64; i++) {
-            int piece = board[i];
-            int idx = piece & Piece.PIECE_MASK;
-            if (idx != Piece.NONE) {
-                if ((piece & Piece.COLOR_MASK) == Piece.WHITE) {
-                    whitePieceArr[idx].add(i);
-                } else {
-                    blackPieceArr[idx].add(i);
-                }
+        int piece = move.getPieceMoved() & Piece.PIECE_MASK;
+        int color = move.getPieceMoved() & Piece.COLOR_MASK;
+      //  int oppColor = move.getPiecesAtNewSquare() & Piece.COLOR_MASK;
+        ArrayList<Integer>[] pieceArr = color == Piece.WHITE ? whitePieceArr : blackPieceArr;
+  
+        ArrayList<Integer> pieceListForPieceMoved = pieceArr[piece];
+
+        // add old square idx
+        pieceListForPieceMoved.add((Integer) move.getOldSqr());
+        int flag = move.getFlags();
+
+    
+
+        
+        if (flag == Move.NORMAL){
+            //remove new sqr
+            pieceListForPieceMoved.remove((Integer) move.getNewSqr());
+            //add captured piece if piece captured 
+            if (move.getPiecesAtNewSquare() != Piece.NONE) {
+            ArrayList<Integer>[] oppPieceList = color == Piece.WHITE ? blackPieceArr : whitePieceArr; 
+            oppPieceList[move.getPiecesAtNewSquare() & Piece.PIECE_MASK].add((Integer)move.getNewSqr());
             }
+        } else if (flag == Move.PROMOTION){
+            //remove new sqr
+            int promoPiece = move.getPromoPiece() & Piece.PIECE_MASK;
+            pieceListForPieceMoved = color == Piece.WHITE ? whitePieceArr[promoPiece] : blackPieceArr[promoPiece];
+            pieceListForPieceMoved.remove((Integer)move.getNewSqr());
+            
+            if (move.getPiecesAtNewSquare() != Piece.NONE) {
+                //add captured piece
+                ArrayList<Integer>[] oppPieceList = color == Piece.WHITE ? blackPieceArr : whitePieceArr; 
+                oppPieceList[move.getPiecesAtNewSquare() & Piece.PIECE_MASK].add((Integer)move.getNewSqr());
+            }
+        } else if (flag == Move.ENPASSANT){
+            //remove new sqr
+            pieceListForPieceMoved.remove((Integer)move.getNewSqr());
+            // Captured pawn idx
+            int capturedPawnIdx = registeredMoves.get(registeredMoves.size() -2).getNewSqr();
+            //add it 
+            ArrayList<Integer> capturedPawnList = color == Piece.WHITE ? blackPieceArr[Piece.PAWN] : whitePieceArr[Piece.PAWN];
+            capturedPawnList.add((Integer)capturedPawnIdx);
+        } else if (flag == Move.CASTLE){
+            pieceListForPieceMoved.remove((Integer)move.getNewSqr());
+            int oldRookIdx = -1;
+            int newRookIdx = -1;        
+             if (move.getNewSqr() == 2) {
+
+                newRookIdx = 3;
+                oldRookIdx = 0;
+        
+
+            } else if (move.getNewSqr() == 6) {
+
+                newRookIdx = 5;
+                oldRookIdx = 7;
+            
+
+            } else if (move.getNewSqr() == 58) {
+
+                newRookIdx  = 59;
+                oldRookIdx = 56;
+             
+
+            } else if (move.getNewSqr() == 62) {
+
+                newRookIdx = 61;
+                oldRookIdx = 63;
+              
+
+            }
+            ArrayList<Integer> rookList = color == Piece.WHITE ? whitePieceArr[Piece.ROOK] : blackPieceArr[Piece.ROOK];
+            rookList.add((Integer)oldRookIdx);
+            rookList.remove((Integer)newRookIdx);
         }
+
+       
+
         setAttackedSquares(Piece.WHITE);
         setAttackedSquares(Piece.BLACK);
 
     }
+
+     
 
 
     public void makeMove(Move move, boolean ifUpdateGUI) {
@@ -245,12 +327,12 @@ public class Board {
         board[newIdx] = board[newIdx] | Piece.MOVED;
         board[oldIdx] = Piece.NONE;
 
-        //Update Piece Lists
-        updatePieceList(move);
+
+     
 
         registeredMoves.push(move);
-        if (ifUpdateGUI)
-            piecePanel.getPiecePanels()[oldIdx].setPiece(Piece.NONE);
+
+        if (ifUpdateGUI) piecePanel.getPiecePanels()[oldIdx].setPiece(Piece.NONE);
             
         if (move.getFlags() == Move.NORMAL) {
 
@@ -271,7 +353,15 @@ public class Board {
                 piecePanel.getPiecePanels()[capturedPawnIdx].setPiece(Piece.NONE);
 
             }
-            performEnPassant(move, newIdx);
+
+            // en passant
+            // remove pawn
+            // Captured pawn idx
+            int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 2).getNewSqr();
+            board[capturedPawnIdx] = Piece.NONE;
+
+            
+           
 
         } else if (move.getFlags() == Move.CASTLE) {
             if (ifUpdateGUI)
@@ -315,7 +405,8 @@ public class Board {
             }
         }
 
-   
+        //Update Piece Lists
+        updatePieceList(move);
         // Update white to move
         whiteToMove = !whiteToMove;
     }
@@ -329,7 +420,6 @@ public class Board {
         board[newIdx] = move.getPiecesAtNewSquare();
         board[newIdx] = board[newIdx] & ~Piece.MOVED_MASK;
       
-        updatePieceListUnmake(move);
 
         if (move.getFlags() == Move.ENPASSANT) {
             int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 2).getNewSqr();
@@ -370,6 +460,8 @@ public class Board {
                 }
             }
         }
+       
+        updatePieceListUnmake(move);
         registeredMoves.pop();
         whiteToMove = !whiteToMove;
     }
@@ -378,18 +470,7 @@ public class Board {
         this.piecePanel = piecePanel;
     }
 
-    public void performEnPassant(Move move, int capturedPieceIfAny) {
-       
-       
-            // en passant
-            // remove pawn
-            // Captured pawn idx
-            int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 2).getNewSqr();
-            board[capturedPawnIdx] = Piece.NONE;
 
-        
-
-    }
 
     public Collection<Move> validMoves(int rank, int file, boolean ifForGUI) {
         int piece = board[rank * 8 + file];

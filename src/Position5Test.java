@@ -36,7 +36,8 @@ public class Position5Test {
     private ArrayList<String> depth4List = new ArrayList<String>();
     private ArrayList<String> depth3List = new ArrayList<String>();
     private ArrayList<String> depth2List = new ArrayList<String>();
-        public int perft(int depth) {
+
+    public int perft(int depth) {
 
         if (depth == 0)
             return 1;
@@ -56,29 +57,28 @@ public class Position5Test {
         return nodes;
     }
 
-    public Collection<Move> genAllPseudoLegalMoves(){
+    public Collection<Move> genAllPseudoLegalMoves() {
 
         Collection<Move> result = new ArrayList<Move>();
         ArrayList<Integer>[] piecesArr = board.getWhiteToMove() ? board.getWhitePieceArr() : board.getBlackPieceArr();
 
-        for (int i = 1; i<=6; i++){
-            ArrayList<Integer> pieces = piecesArr[i];
-            for (int j = 0; j<pieces.size(); j++){
+        for (int i = 1; i <= 6; i++) {
+            ArrayList<Integer> pieces = (ArrayList<Integer>)piecesArr[i].clone();
+            for (int j = 0; j < pieces.size(); j++) {
                 int position = pieces.get(j);
-                result.addAll(board.validMoves(position/8, position%8, false));
+                result.addAll(board.validMoves(position / 8, position % 8, false));
             }
-      
+
         }
         return result;
-
 
     }
 
     public String translateMoveToString(Move move) {
         String promoPieceText = "";
-        if (move.getFlags() == Move.PROMOTION){
-        
-            switch (move.getPromoPiece() & Piece.PIECE_MASK){
+        if (move.getFlags() == Move.PROMOTION) {
+
+            switch (move.getPromoPiece() & Piece.PIECE_MASK) {
                 case Piece.BISHOP:
                     promoPieceText = "b";
                     break;
@@ -88,12 +88,12 @@ public class Position5Test {
                 case Piece.ROOK:
                     promoPieceText = "r";
                     break;
-                case Piece.QUEEN:  
+                case Piece.QUEEN:
                     promoPieceText = "q";
                     break;
 
             }
-          
+
         }
         return translateIndexToString(move.getOldSqr()) + translateIndexToString(move.getNewSqr()) + promoPieceText;
 

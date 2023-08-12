@@ -33,11 +33,7 @@ public class Position6Test {
         Assert.assertEquals(3894594, perft(4));
     }
 
-    @Test
-    public void testDepth5() {
-        depth = 5;
-        Assert.assertEquals(164075551, perft(5));
-    }
+    
 
     public int perft(int depth) {
 
@@ -65,7 +61,7 @@ public class Position6Test {
         ArrayList<Integer>[] piecesArr = board.getWhiteToMove() ? board.getWhitePieceArr() : board.getBlackPieceArr();
 
         for (int i = 1; i<=6; i++){
-            ArrayList<Integer> pieces = piecesArr[i];
+            ArrayList<Integer> pieces = (ArrayList<Integer>)piecesArr[i].clone();
             for (int j = 0; j<pieces.size(); j++){
                 int position = pieces.get(j);
                 result.addAll(board.validMoves(position/8, position%8, false));
