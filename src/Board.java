@@ -150,8 +150,7 @@ public class Board {
                 }
             }
         }
-        setAttackedSquares(Piece.WHITE);
-        setAttackedSquares(Piece.BLACK);
+        setAttackedSquares();
     }
 
     public void updatePieceList(Move move) {
@@ -225,8 +224,7 @@ public class Board {
             rookList.add((Integer) newRookIdx);
         }
 
-        setAttackedSquares(Piece.WHITE);
-        setAttackedSquares(Piece.BLACK);
+        setAttackedSquares();
 
     }
 
@@ -302,8 +300,7 @@ public class Board {
             rookList.remove((Integer) newRookIdx);
         }
 
-        setAttackedSquares(Piece.WHITE);
-        setAttackedSquares(Piece.BLACK);
+        setAttackedSquares();
 
     }
 
@@ -455,8 +452,6 @@ public class Board {
 
     public Collection<Move> validMoves(int rank, int file, boolean ifForGUI) {
         int piece = board[rank * 8 + file];
-        // Generate board showing what is under attack
-        setAttackedSquares((piece & Piece.COLOR_MASK) == Piece.WHITE ? Piece.BLACK : Piece.WHITE);
         // Generate moves
         Collection<Move> moves = generateValidMoves(rank, file, piece, ifForGUI);
 
@@ -505,65 +500,110 @@ public class Board {
         }
     }
 
-    public void setAttackedSquares(int color) {
-        // Pick attackedSquaresArr based on color
-        boolean[] attackedSquares = new boolean[64];
-        if (color == Piece.WHITE) {
-            whiteAttackingSquares = attackedSquares;
-        } else {
-            blackAttackingSquares = attackedSquares;
-        }
+    public void setAttackedSquares() {
+        // clear the exisitng arrays... try new chekc profiler
+            Arrays.fill(whiteAttackingSquares,false);
+            Arrays.fill(blackAttackingSquares,false);
+     
 
-        // Find opposite color piece list
-        ArrayList<Integer>[] selectedColorPiecesList = (color == Piece.WHITE) ? whitePieceArr : blackPieceArr;
+
         // Set attacked squares for king
-        if (selectedColorPiecesList[Piece.KING].size() != 0) {
-            Collection<Move> kingMoves = generateKingMoves(selectedColorPiecesList[Piece.KING].get(0) / 8,
-                    selectedColorPiecesList[Piece.KING].get(0) % 8);
+        if (whitePieceArr[Piece.KING].size() != 0) {
+            Collection<Move> kingMoves = generateKingMoves(whitePieceArr[Piece.KING].get(0) / 8,
+                    whitePieceArr[Piece.KING].get(0) % 8);
             for (Move move : kingMoves) {
-                attackedSquares[move.getNewSqr()] = true;
+                whiteAttackingSquares[move.getNewSqr()] = true;
             }
         }
 
         // set attacked squares for queen
-        for (int i = 0; i < selectedColorPiecesList[Piece.QUEEN].size(); i++) {
-            Collection<Move> queenMoves = generateSlidingMoves(selectedColorPiecesList[Piece.QUEEN].get(i),
+        for (int i = 0; i < whitePieceArr[Piece.QUEEN].size(); i++) {
+            Collection<Move> queenMoves = generateSlidingMoves(whitePieceArr[Piece.QUEEN].get(i),
                     Piece.QUEEN);
             for (Move move : queenMoves) {
-                attackedSquares[move.getNewSqr()] = true;
+                whiteAttackingSquares[move.getNewSqr()] = true;
             }
         }
         // set attacked squares for rook
-        for (int i = 0; i < selectedColorPiecesList[Piece.ROOK].size(); i++) {
-            Collection<Move> rookMoves = generateSlidingMoves(selectedColorPiecesList[Piece.ROOK].get(i), Piece.ROOK);
+        for (int i = 0; i < whitePieceArr[Piece.ROOK].size(); i++) {
+            Collection<Move> rookMoves = generateSlidingMoves(whitePieceArr[Piece.ROOK].get(i), Piece.ROOK);
             for (Move move : rookMoves) {
-                attackedSquares[move.getNewSqr()] = true;
+                whiteAttackingSquares[move.getNewSqr()] = true;
             }
         }
         // set attacked squares for bishop
-        for (int i = 0; i < selectedColorPiecesList[Piece.BISHOP].size(); i++) {
-            Collection<Move> bishopMoves = generateSlidingMoves(selectedColorPiecesList[Piece.BISHOP].get(i),
+        for (int i = 0; i < whitePieceArr[Piece.BISHOP].size(); i++) {
+            Collection<Move> bishopMoves = generateSlidingMoves(whitePieceArr[Piece.BISHOP].get(i),
                     Piece.BISHOP);
             for (Move move : bishopMoves) {
-                attackedSquares[move.getNewSqr()] = true;
+                whiteAttackingSquares[move.getNewSqr()] = true;
             }
         }
         // set attacked squares for knight
-        for (int i = 0; i < selectedColorPiecesList[Piece.KNIGHT].size(); i++) {
-            Collection<Move> knightMoves = generateKnightMoves(selectedColorPiecesList[Piece.KNIGHT].get(i) / 8,
-                    selectedColorPiecesList[Piece.KNIGHT].get(i) % 8);
+        for (int i = 0; i < whitePieceArr[Piece.KNIGHT].size(); i++) {
+            Collection<Move> knightMoves = generateKnightMoves(whitePieceArr[Piece.KNIGHT].get(i) / 8,
+                    whitePieceArr[Piece.KNIGHT].get(i) % 8);
             for (Move move : knightMoves) {
-                attackedSquares[move.getNewSqr()] = true;
+                whiteAttackingSquares[move.getNewSqr()] = true;
             }
         }
         // set attacked squares for pawn
-        for (int i = 0; i < selectedColorPiecesList[Piece.PAWN].size(); i++) {
-            Collection<Move> pawnMoves = generatePawnAttacks(selectedColorPiecesList[Piece.PAWN].get(i) / 8,
-                    selectedColorPiecesList[Piece.PAWN].get(i) % 8);
+        for (int i = 0; i < whitePieceArr[Piece.PAWN].size(); i++) {
+            Collection<Move> pawnMoves = generatePawnAttacks(whitePieceArr[Piece.PAWN].get(i) / 8,
+                    whitePieceArr[Piece.PAWN].get(i) % 8);
             for (Move move : pawnMoves) {
-                attackedSquares[move.getNewSqr()] = true;
+                whiteAttackingSquares[move.getNewSqr()] = true;
             }
         }
+            // Set attacked squares for king
+    if (blackPieceArr[Piece.KING].size() != 0) {
+        Collection<Move> kingMoves = generateKingMoves(blackPieceArr[Piece.KING].get(0) / 8,
+                blackPieceArr[Piece.KING].get(0) % 8);
+        for (Move move : kingMoves) {
+            blackAttackingSquares[move.getNewSqr()] = true;
+        }
+    }
+
+    // set attacked squares for queen
+    for (int i = 0; i < blackPieceArr[Piece.QUEEN].size(); i++) {
+        Collection<Move> queenMoves = generateSlidingMoves(blackPieceArr[Piece.QUEEN].get(i),
+                Piece.QUEEN);
+        for (Move move : queenMoves) {
+            blackAttackingSquares[move.getNewSqr()] = true;
+        }
+    }
+    // set attacked squares for rook
+    for (int i = 0; i < blackPieceArr[Piece.ROOK].size(); i++) {
+        Collection<Move> rookMoves = generateSlidingMoves(blackPieceArr[Piece.ROOK].get(i), Piece.ROOK);
+        for (Move move : rookMoves) {
+            blackAttackingSquares[move.getNewSqr()] = true;
+        }
+    }
+    // set attacked squares for bishop
+    for (int i = 0; i < blackPieceArr[Piece.BISHOP].size(); i++) {
+        Collection<Move> bishopMoves = generateSlidingMoves(blackPieceArr[Piece.BISHOP].get(i),
+                Piece.BISHOP);
+        for (Move move : bishopMoves) {
+            blackAttackingSquares[move.getNewSqr()] = true;
+        }
+    }
+    // set attacked squares for knight
+    for (int i = 0; i < blackPieceArr[Piece.KNIGHT].size(); i++) {
+        Collection<Move> knightMoves = generateKnightMoves(blackPieceArr[Piece.KNIGHT].get(i) / 8,
+                blackPieceArr[Piece.KNIGHT].get(i) % 8);
+        for (Move move : knightMoves) {
+            blackAttackingSquares[move.getNewSqr()] = true;
+        }
+    }
+    // set attacked squares for pawn
+    for (int i = 0; i < blackPieceArr[Piece.PAWN].size(); i++) {
+        Collection<Move> pawnMoves = generatePawnAttacks(blackPieceArr[Piece.PAWN].get(i) / 8,
+                blackPieceArr[Piece.PAWN].get(i) % 8);
+        for (Move move : pawnMoves) {
+            blackAttackingSquares[move.getNewSqr()] = true;
+        }
+    }
+
 
     }
 
