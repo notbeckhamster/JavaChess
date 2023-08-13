@@ -2,6 +2,7 @@ package src;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Stack;
@@ -9,7 +10,8 @@ import java.util.Stack;
 public class Board {
     private int[] board = new int[64];
     private HashMap<String, Integer> dirToCompassRoseDirHM = new HashMap<String, Integer>();
-    private HashMap<String, int[]> dirToNumToEdgeHM = new HashMap<String, int[]>();
+    private HashMap<String, int[]> dirStrToEdgeHM = new HashMap<String, int[]>();
+    private HashMap<Integer, int[]> dirIntToEdgeHM = new HashMap<Integer, int[]>();
     private int[] northNumToEdge = new int[64];
     private int[] southNumToEdge = new int[64];
     private int[] eastNumToEdge = new int[64];
@@ -69,7 +71,6 @@ public class Board {
         this.whiteToMove = whiteToMove;
     }
 
-    
     public boolean ifWhiteIsToMove() {
         return whiteToMove;
     }
@@ -99,16 +100,6 @@ public class Board {
         dirToCompassRoseDirHM.put("east", 1);
         dirToCompassRoseDirHM.put("noEa", 9);
 
-        // setup numToEdge Arrays
-        dirToNumToEdgeHM.put("nort", northNumToEdge);
-        dirToNumToEdgeHM.put("noWe", noWeNumToEdge);
-        dirToNumToEdgeHM.put("west", westNumToEdge);
-        dirToNumToEdgeHM.put("soWe", soWeNumToEdge);
-        dirToNumToEdgeHM.put("sout", southNumToEdge);
-        dirToNumToEdgeHM.put("soEa", soEaNumToEdge);
-        dirToNumToEdgeHM.put("east", eastNumToEdge);
-        dirToNumToEdgeHM.put("noEa", noEaNumToEdge);
-
         // setup toEdge Arrays
         for (int rank = 0; rank < 8; rank++) {
             for (int file = 0; file < 8; file++) {
@@ -124,6 +115,24 @@ public class Board {
             }
         }
 
+        // setup numToEdge Arrays
+        dirStrToEdgeHM.put("nort", northNumToEdge);
+        dirStrToEdgeHM.put("noWe", noWeNumToEdge);
+        dirStrToEdgeHM.put("west", westNumToEdge);
+        dirStrToEdgeHM.put("soWe", soWeNumToEdge);
+        dirStrToEdgeHM.put("sout", southNumToEdge);
+        dirStrToEdgeHM.put("soEa", soEaNumToEdge);
+        dirStrToEdgeHM.put("east", eastNumToEdge);
+        dirStrToEdgeHM.put("noEa", noEaNumToEdge);
+
+        dirIntToEdgeHM.put(dirToCompassRoseDirHM.get("nort"), northNumToEdge);
+        dirIntToEdgeHM.put(dirToCompassRoseDirHM.get("noWe"), noWeNumToEdge);
+        dirIntToEdgeHM.put(dirToCompassRoseDirHM.get("west"), westNumToEdge);
+        dirIntToEdgeHM.put(dirToCompassRoseDirHM.get("soWe"), soWeNumToEdge);
+        dirIntToEdgeHM.put(dirToCompassRoseDirHM.get("sout"), southNumToEdge);
+        dirIntToEdgeHM.put(dirToCompassRoseDirHM.get("soEa"), soEaNumToEdge);
+        dirIntToEdgeHM.put(dirToCompassRoseDirHM.get("east"), eastNumToEdge);
+        dirIntToEdgeHM.put(dirToCompassRoseDirHM.get("noEa"), noEaNumToEdge);
     }
 
     public Stack<Move> getRegisteredMoves() {
@@ -149,191 +158,169 @@ public class Board {
 
         int piece = move.getPieceMoved() & Piece.PIECE_MASK;
         int color = move.getPieceMoved() & Piece.COLOR_MASK;
-      //  int oppColor = move.getPiecesAtNewSquare() & Piece.COLOR_MASK;
+        // int oppColor = move.getPiecesAtNewSquare() & Piece.COLOR_MASK;
         ArrayList<Integer>[] pieceArr = color == Piece.WHITE ? whitePieceArr : blackPieceArr;
-  
+
         ArrayList<Integer> pieceListForPieceMoved = pieceArr[piece];
 
         // Remove old square idx
         pieceListForPieceMoved.remove((Integer) move.getOldSqr());
         int flag = move.getFlags();
 
-    
-
-        
-        if (flag == Move.NORMAL){
-            //add new sqr
+        if (flag == Move.NORMAL) {
+            // add new sqr
             pieceListForPieceMoved.add((Integer) move.getNewSqr());
-            //Remove captured piece if piece captured 
+            // Remove captured piece if piece captured
             if (move.getPiecesAtNewSquare() != Piece.NONE) {
-            ArrayList<Integer>[] oppPieceList = color == Piece.WHITE ? blackPieceArr : whitePieceArr; 
-            oppPieceList[move.getPiecesAtNewSquare() & Piece.PIECE_MASK].remove((Integer)move.getNewSqr());
+                ArrayList<Integer>[] oppPieceList = color == Piece.WHITE ? blackPieceArr : whitePieceArr;
+                oppPieceList[move.getPiecesAtNewSquare() & Piece.PIECE_MASK].remove((Integer) move.getNewSqr());
             }
-        } else if (flag == Move.PROMOTION){
-            //add new sqr
+        } else if (flag == Move.PROMOTION) {
+            // add new sqr
             int promoPiece = move.getPromoPiece() & Piece.PIECE_MASK;
             pieceListForPieceMoved = color == Piece.WHITE ? whitePieceArr[promoPiece] : blackPieceArr[promoPiece];
-            pieceListForPieceMoved.add((Integer)move.getNewSqr());
-            
+            pieceListForPieceMoved.add((Integer) move.getNewSqr());
+
             if (move.getPiecesAtNewSquare() != Piece.NONE) {
-                //Remove captured piece
-                ArrayList<Integer>[] oppPieceList = color == Piece.WHITE ? blackPieceArr : whitePieceArr; 
-                oppPieceList[move.getPiecesAtNewSquare() & Piece.PIECE_MASK].remove((Integer)move.getNewSqr());
+                // Remove captured piece
+                ArrayList<Integer>[] oppPieceList = color == Piece.WHITE ? blackPieceArr : whitePieceArr;
+                oppPieceList[move.getPiecesAtNewSquare() & Piece.PIECE_MASK].remove((Integer) move.getNewSqr());
             }
-        } else if (flag == Move.ENPASSANT){
-            //add new sqr
-            pieceListForPieceMoved.add((Integer)move.getNewSqr());
+        } else if (flag == Move.ENPASSANT) {
+            // add new sqr
+            pieceListForPieceMoved.add((Integer) move.getNewSqr());
             // Captured pawn idx
-            int capturedPawnIdx = registeredMoves.get(registeredMoves.size() -2).getNewSqr();
-            //Remove it 
-            ArrayList<Integer> capturedPawnList = color == Piece.WHITE ? blackPieceArr[Piece.PAWN] : whitePieceArr[Piece.PAWN];
-            capturedPawnList.remove((Integer)capturedPawnIdx);
-        } else if (flag == Move.CASTLE){
-            pieceListForPieceMoved.add((Integer)move.getNewSqr());
+            int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 2).getNewSqr();
+            // Remove it
+            ArrayList<Integer> capturedPawnList = color == Piece.WHITE ? blackPieceArr[Piece.PAWN]
+                    : whitePieceArr[Piece.PAWN];
+            capturedPawnList.remove((Integer) capturedPawnIdx);
+        } else if (flag == Move.CASTLE) {
+            pieceListForPieceMoved.add((Integer) move.getNewSqr());
             int oldRookIdx = -1;
-            int newRookIdx = -1;        
-             if (move.getNewSqr() == 2) {
+            int newRookIdx = -1;
+            if (move.getNewSqr() == 2) {
 
                 newRookIdx = 3;
                 oldRookIdx = 0;
-        
 
             } else if (move.getNewSqr() == 6) {
 
                 newRookIdx = 5;
                 oldRookIdx = 7;
-            
 
             } else if (move.getNewSqr() == 58) {
 
-                newRookIdx  = 59;
+                newRookIdx = 59;
                 oldRookIdx = 56;
-             
 
             } else if (move.getNewSqr() == 62) {
 
                 newRookIdx = 61;
                 oldRookIdx = 63;
-              
 
             }
             ArrayList<Integer> rookList = color == Piece.WHITE ? whitePieceArr[Piece.ROOK] : blackPieceArr[Piece.ROOK];
-            rookList.remove((Integer)oldRookIdx);
-            rookList.add((Integer)newRookIdx);
+            rookList.remove((Integer) oldRookIdx);
+            rookList.add((Integer) newRookIdx);
         }
-
-       
 
         setAttackedSquares(Piece.WHITE);
         setAttackedSquares(Piece.BLACK);
 
     }
 
-
     /** repeat of update piece list swapped add and remove */
-     public void updatePieceListUnmake(Move move) {
+    public void updatePieceListUnmake(Move move) {
 
         int piece = move.getPieceMoved() & Piece.PIECE_MASK;
         int color = move.getPieceMoved() & Piece.COLOR_MASK;
-      //  int oppColor = move.getPiecesAtNewSquare() & Piece.COLOR_MASK;
+        // int oppColor = move.getPiecesAtNewSquare() & Piece.COLOR_MASK;
         ArrayList<Integer>[] pieceArr = color == Piece.WHITE ? whitePieceArr : blackPieceArr;
-  
+
         ArrayList<Integer> pieceListForPieceMoved = pieceArr[piece];
 
         // add old square idx
         pieceListForPieceMoved.add((Integer) move.getOldSqr());
         int flag = move.getFlags();
 
-    
-
-        
-        if (flag == Move.NORMAL){
-            //remove new sqr
+        if (flag == Move.NORMAL) {
+            // remove new sqr
             pieceListForPieceMoved.remove((Integer) move.getNewSqr());
-            //add captured piece if piece captured 
+            // add captured piece if piece captured
             if (move.getPiecesAtNewSquare() != Piece.NONE) {
-            ArrayList<Integer>[] oppPieceList = color == Piece.WHITE ? blackPieceArr : whitePieceArr; 
-            oppPieceList[move.getPiecesAtNewSquare() & Piece.PIECE_MASK].add((Integer)move.getNewSqr());
+                ArrayList<Integer>[] oppPieceList = color == Piece.WHITE ? blackPieceArr : whitePieceArr;
+                oppPieceList[move.getPiecesAtNewSquare() & Piece.PIECE_MASK].add((Integer) move.getNewSqr());
             }
-        } else if (flag == Move.PROMOTION){
-            //remove new sqr
+        } else if (flag == Move.PROMOTION) {
+            // remove new sqr
             int promoPiece = move.getPromoPiece() & Piece.PIECE_MASK;
             pieceListForPieceMoved = color == Piece.WHITE ? whitePieceArr[promoPiece] : blackPieceArr[promoPiece];
-            pieceListForPieceMoved.remove((Integer)move.getNewSqr());
-            
+            pieceListForPieceMoved.remove((Integer) move.getNewSqr());
+
             if (move.getPiecesAtNewSquare() != Piece.NONE) {
-                //add captured piece
-                ArrayList<Integer>[] oppPieceList = color == Piece.WHITE ? blackPieceArr : whitePieceArr; 
-                oppPieceList[move.getPiecesAtNewSquare() & Piece.PIECE_MASK].add((Integer)move.getNewSqr());
+                // add captured piece
+                ArrayList<Integer>[] oppPieceList = color == Piece.WHITE ? blackPieceArr : whitePieceArr;
+                oppPieceList[move.getPiecesAtNewSquare() & Piece.PIECE_MASK].add((Integer) move.getNewSqr());
             }
-        } else if (flag == Move.ENPASSANT){
-            //remove new sqr
-            pieceListForPieceMoved.remove((Integer)move.getNewSqr());
+        } else if (flag == Move.ENPASSANT) {
+            // remove new sqr
+            pieceListForPieceMoved.remove((Integer) move.getNewSqr());
             // Captured pawn idx
-            int capturedPawnIdx = registeredMoves.get(registeredMoves.size() -2).getNewSqr();
-            //add it 
-            ArrayList<Integer> capturedPawnList = color == Piece.WHITE ? blackPieceArr[Piece.PAWN] : whitePieceArr[Piece.PAWN];
-            capturedPawnList.add((Integer)capturedPawnIdx);
-        } else if (flag == Move.CASTLE){
-            pieceListForPieceMoved.remove((Integer)move.getNewSqr());
+            int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 2).getNewSqr();
+            // add it
+            ArrayList<Integer> capturedPawnList = color == Piece.WHITE ? blackPieceArr[Piece.PAWN]
+                    : whitePieceArr[Piece.PAWN];
+            capturedPawnList.add((Integer) capturedPawnIdx);
+        } else if (flag == Move.CASTLE) {
+            pieceListForPieceMoved.remove((Integer) move.getNewSqr());
             int oldRookIdx = -1;
-            int newRookIdx = -1;        
-             if (move.getNewSqr() == 2) {
+            int newRookIdx = -1;
+            if (move.getNewSqr() == 2) {
 
                 newRookIdx = 3;
                 oldRookIdx = 0;
-        
 
             } else if (move.getNewSqr() == 6) {
 
                 newRookIdx = 5;
                 oldRookIdx = 7;
-            
 
             } else if (move.getNewSqr() == 58) {
 
-                newRookIdx  = 59;
+                newRookIdx = 59;
                 oldRookIdx = 56;
-             
 
             } else if (move.getNewSqr() == 62) {
 
                 newRookIdx = 61;
                 oldRookIdx = 63;
-              
 
             }
             ArrayList<Integer> rookList = color == Piece.WHITE ? whitePieceArr[Piece.ROOK] : blackPieceArr[Piece.ROOK];
-            rookList.add((Integer)oldRookIdx);
-            rookList.remove((Integer)newRookIdx);
+            rookList.add((Integer) oldRookIdx);
+            rookList.remove((Integer) newRookIdx);
         }
-
-       
 
         setAttackedSquares(Piece.WHITE);
         setAttackedSquares(Piece.BLACK);
 
     }
 
-     
-
-
     public void makeMove(Move move, boolean ifUpdateGUI) {
         int oldIdx = move.getOldSqr();
         int newIdx = move.getNewSqr();
 
-        //Update Board
+        // Update Board
         board[newIdx] = move.getPieceMoved();
         board[newIdx] = board[newIdx] | Piece.MOVED;
         board[oldIdx] = Piece.NONE;
 
-
-     
-
         registeredMoves.push(move);
 
-        if (ifUpdateGUI) piecePanel.getPiecePanels()[oldIdx].setPiece(Piece.NONE);
-            
+        if (ifUpdateGUI)
+            piecePanel.getPiecePanels()[oldIdx].setPiece(Piece.NONE);
+
         if (move.getFlags() == Move.NORMAL) {
 
             if (ifUpdateGUI)
@@ -359,9 +346,6 @@ public class Board {
             // Captured pawn idx
             int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 2).getNewSqr();
             board[capturedPawnIdx] = Piece.NONE;
-
-            
-           
 
         } else if (move.getFlags() == Move.CASTLE) {
             if (ifUpdateGUI)
@@ -405,7 +389,7 @@ public class Board {
             }
         }
 
-        //Update Piece Lists
+        // Update Piece Lists
         updatePieceList(move);
         // Update white to move
         whiteToMove = !whiteToMove;
@@ -419,7 +403,6 @@ public class Board {
         board[oldIdx] = move.getPieceMoved();
         board[newIdx] = move.getPiecesAtNewSquare();
         board[newIdx] = board[newIdx] & ~Piece.MOVED_MASK;
-      
 
         if (move.getFlags() == Move.ENPASSANT) {
             int capturedPawnIdx = registeredMoves.get(registeredMoves.size() - 2).getNewSqr();
@@ -460,7 +443,7 @@ public class Board {
                 }
             }
         }
-       
+
         updatePieceListUnmake(move);
         registeredMoves.pop();
         whiteToMove = !whiteToMove;
@@ -470,15 +453,13 @@ public class Board {
         this.piecePanel = piecePanel;
     }
 
-
-
     public Collection<Move> validMoves(int rank, int file, boolean ifForGUI) {
         int piece = board[rank * 8 + file];
         // Generate board showing what is under attack
         setAttackedSquares((piece & Piece.COLOR_MASK) == Piece.WHITE ? Piece.BLACK : Piece.WHITE);
         // Generate moves
         Collection<Move> moves = generateValidMoves(rank, file, piece, ifForGUI);
-        
+
         // Filter out moves that leave king in check
         Collection<Move> movesCopy = new ArrayList<Move>(moves);
         for (Move eachMove : movesCopy) {
@@ -511,7 +492,7 @@ public class Board {
 
     public Collection<Move> generateValidMoves(int rank, int file, int piece, boolean ifForGUI) {
         if (isSlidingPiece(piece) == true) {
-            return generateSlidingMoves(rank, file, piece);
+            return generateSlidingMoves(rank * 8 + file, piece);
         } else if ((piece & Piece.PIECE_MASK) == Piece.KNIGHT) {
             return generateKnightMoves(rank, file);
         } else if ((piece & Piece.PIECE_MASK) == Piece.PAWN) {
@@ -532,7 +513,7 @@ public class Board {
         } else {
             blackAttackingSquares = attackedSquares;
         }
-        
+
         // Find opposite color piece list
         ArrayList<Integer>[] selectedColorPiecesList = (color == Piece.WHITE) ? whitePieceArr : blackPieceArr;
         // Set attacked squares for king
@@ -546,24 +527,23 @@ public class Board {
 
         // set attacked squares for queen
         for (int i = 0; i < selectedColorPiecesList[Piece.QUEEN].size(); i++) {
-            Collection<Move> queenMoves = generateSlidingMoves(selectedColorPiecesList[Piece.QUEEN].get(i) / 8,
-                    selectedColorPiecesList[Piece.QUEEN].get(i) % 8, Piece.QUEEN);
+            Collection<Move> queenMoves = generateSlidingMoves(selectedColorPiecesList[Piece.QUEEN].get(i),
+                    Piece.QUEEN);
             for (Move move : queenMoves) {
                 attackedSquares[move.getNewSqr()] = true;
             }
         }
         // set attacked squares for rook
         for (int i = 0; i < selectedColorPiecesList[Piece.ROOK].size(); i++) {
-            Collection<Move> rookMoves = generateSlidingMoves(selectedColorPiecesList[Piece.ROOK].get(i) / 8,
-                    selectedColorPiecesList[Piece.ROOK].get(i) % 8, Piece.ROOK);
+            Collection<Move> rookMoves = generateSlidingMoves(selectedColorPiecesList[Piece.ROOK].get(i), Piece.ROOK);
             for (Move move : rookMoves) {
                 attackedSquares[move.getNewSqr()] = true;
             }
         }
         // set attacked squares for bishop
         for (int i = 0; i < selectedColorPiecesList[Piece.BISHOP].size(); i++) {
-            Collection<Move> bishopMoves = generateSlidingMoves(selectedColorPiecesList[Piece.BISHOP].get(i) / 8,
-                    selectedColorPiecesList[Piece.BISHOP].get(i) % 8, Piece.BISHOP);
+            Collection<Move> bishopMoves = generateSlidingMoves(selectedColorPiecesList[Piece.BISHOP].get(i),
+                    Piece.BISHOP);
             for (Move move : bishopMoves) {
                 attackedSquares[move.getNewSqr()] = true;
             }
@@ -606,13 +586,12 @@ public class Board {
         }
         return false;
     }
-   
+
     public Collection<Move> generatePawnAttacks(int rank, int file) {
         ArrayList<Move> moves = new ArrayList<Move>();
         int currIdx = 8 * rank + file;
-       
+
         int piece = board[currIdx];
-     
 
         // Add the diagonal moves if there is an enemy piece
         String leftDirectionKey = Piece.isColor(piece, Piece.WHITE) ? "noWe" : "soWe";
@@ -621,8 +600,8 @@ public class Board {
         int leftCaptureSqr = currIdx + dirToCompassRoseDirHM.get(leftDirectionKey);
         int rightCaptureSqr = currIdx + dirToCompassRoseDirHM.get(rightDirectionKey);
         // Check captures are moves on the board
-        int numToEdgeLeft = dirToNumToEdgeHM.get(leftDirectionKey)[currIdx];
-        int numToEdgeRight = dirToNumToEdgeHM.get(rightDirectionKey)[currIdx];
+        int numToEdgeLeft = dirStrToEdgeHM.get(leftDirectionKey)[currIdx];
+        int numToEdgeRight = dirStrToEdgeHM.get(rightDirectionKey)[currIdx];
         if (numToEdgeLeft >= 1)
             moves.add(new Move(currIdx, leftCaptureSqr, piece, board[leftCaptureSqr], Move.NORMAL));
 
@@ -692,8 +671,8 @@ public class Board {
         int rightCaptureSqr = currIdx + dirToCompassRoseDirHM.get(rightDirectionKey);
 
         // Check captures are moves on the board
-        int numToEdgeLeft = dirToNumToEdgeHM.get(leftDirectionKey)[8 * rank + file];
-        int numToEdgeRight = dirToNumToEdgeHM.get(rightDirectionKey)[8 * rank + file];
+        int numToEdgeLeft = dirStrToEdgeHM.get(leftDirectionKey)[8 * rank + file];
+        int numToEdgeRight = dirStrToEdgeHM.get(rightDirectionKey)[8 * rank + file];
         if (isOnBoard(leftCaptureSqr) && numToEdgeLeft > 0 && board[leftCaptureSqr] != Piece.NONE
                 && Piece.isColor(piece, board[leftCaptureSqr] & Piece.COLOR_MASK) == false) {
             int moveType = (leftCaptureSqr / 8 == 0 || leftCaptureSqr / 8 == 7) ? Move.PROMOTION : Move.NORMAL;
@@ -769,17 +748,14 @@ public class Board {
 
     }
 
-    public Collection<Move> generateSlidingMoves(int rank, int file, int piece) {
+    public Collection<Move> generateSlidingMoves(int idx, int piece) {
         ArrayList<Move> moves = new ArrayList<Move>();
         // generate directions piece can move
-        ArrayList<String> directionsPieceCanMove = generateDirections(piece);
+        ArrayList<Integer> directionsPieceCanMove = generateDirections(piece);
         // for each direction piece can move find the valid moves
-        for (String eachDirection : dirToCompassRoseDirHM.keySet()) {
-            if (directionsPieceCanMove.contains(eachDirection) == false)
-                continue;
-            int direction = dirToCompassRoseDirHM.get(eachDirection);
-            int numToEdge = dirToNumToEdgeHM.get(eachDirection)[8 * rank + file];
-            int currIdx = 8 * rank + file;
+        for (Integer direction : directionsPieceCanMove) {
+            int numToEdge = dirIntToEdgeHM.get(direction)[idx];
+            int currIdx = idx;
             int oldIdx = currIdx;
             for (int i = 0; i < numToEdge; i++) {
                 currIdx += direction;
@@ -866,7 +842,7 @@ public class Board {
             if (isOnBoard(newIdx) == false)
                 continue;
 
-            int numToEdge = dirToNumToEdgeHM.get(eachDirection)[currIdx];
+            int numToEdge = dirStrToEdgeHM.get(eachDirection)[currIdx];
             boolean ifNewSqrDifColor = (board[newIdx] & Piece.COLOR_MASK) != (piece & Piece.COLOR_MASK);
             boolean ifNewSqrEmpty = board[newIdx] == Piece.NONE;
             if (ifNewSqrEmpty == true && numToEdge > 0) {
@@ -882,12 +858,11 @@ public class Board {
         boolean queenSideCastle = color == Piece.WHITE ? ifWhiteQueenSideCastle : ifBlackQueenSideCastle;
         // Castling
 
-        
         // If king has moved dont consider castling
         if ((piece & Piece.MOVED_MASK) == Piece.MOVED)
             return moves;
-        //If king isnt in its position then dont consider castling
-         int whereKingIdxShouldBe = color == Piece.WHITE ? 4 : 60;
+        // If king isnt in its position then dont consider castling
+        int whereKingIdxShouldBe = color == Piece.WHITE ? 4 : 60;
         if (currIdx != whereKingIdxShouldBe)
             return moves;
         // If king is in check dont consider castling
@@ -905,7 +880,7 @@ public class Board {
                 ifRightCastleValid = false;
 
         }
-       
+
         // Check the right rook if present it hasnt moved or the rook isnt there
         if ((board[whereKingIdxShouldBe + 3] & Piece.PIECE_MASK) == Piece.ROOK
                 && (board[whereKingIdxShouldBe + 3] & Piece.MOVED_MASK) == Piece.MOVED)
@@ -938,28 +913,15 @@ public class Board {
         return moves;
     }
 
-    public ArrayList<String> generateDirections(int piece) {
+    public ArrayList<Integer> generateDirections(int piece) {
         int pieceType = piece & Piece.PIECE_MASK;
-        ArrayList<String> directions = new ArrayList<String>();
+        ArrayList<Integer> directions = null;
         if (pieceType == Piece.ROOK) {
-            directions.add("nort");
-            directions.add("west");
-            directions.add("sout");
-            directions.add("east");
+            directions = new ArrayList<Integer>(Arrays.asList(8, -1, 1, -8));
         } else if (pieceType == Piece.BISHOP) {
-            directions.add("noWe");
-            directions.add("noEa");
-            directions.add("soWe");
-            directions.add("soEa");
+            directions = new ArrayList<Integer>(Arrays.asList(7, -9, -7, 9));
         } else if (pieceType == Piece.QUEEN) {
-            directions.add("nort");
-            directions.add("noWe");
-            directions.add("west");
-            directions.add("soWe");
-            directions.add("sout");
-            directions.add("soEa");
-            directions.add("east");
-            directions.add("noEa");
+            directions = new ArrayList<Integer>(Arrays.asList(7, -9, -7, 9, 8, -1, 1, -8));
         }
         return directions;
     }
