@@ -36,7 +36,7 @@ public class MoveGen {
         double max = Double.NEGATIVE_INFINITY;
         for (Move eachmove : genAllPseudoLegalMoves()){
             board.makeMove(eachmove, false);
-            double score = -negaMax(depth-1);
+            double score = (-1)*negaMax(depth-1);
              board.unmakeMove(eachmove, false);
              if (score > max) max = score;
         }
@@ -55,12 +55,14 @@ public class MoveGen {
         for (Move eachMove : rootMoves){
             board.makeMove(eachMove, false);
             double score = negaMax(depth - 1);
+            score = (-1)*score;
             board.unmakeMove(eachMove, false);
             if (score>max) {
                 max = score;
                 optimalMove = eachMove;
             }
         }
+      
         
         return optimalMove;
     }
