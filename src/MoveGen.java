@@ -11,7 +11,7 @@ public class MoveGen {
     }
 
     public void playResponse() {
-        Move move = rootNegaMax(3);
+        Move move = rootNegaMax(4);
         board.makeMove(move, true);
        
         
@@ -70,7 +70,7 @@ public class MoveGen {
         int turn = board.getWhiteToMove() == true ? Piece.WHITE : Piece.BLACK;
         int oppTurn = turn == Piece.WHITE ? Piece.BLACK : Piece.WHITE;
         double mobilWeight = 0.25;
-        return materialScore(turn) + mobilWeight*(generateMobilityEval(turn) - generateMobilityEval(oppTurn));
+        return materialScore(turn) /** + mobilWeight*(generateMobilityEval(turn) - generateMobilityEval(oppTurn)) */;
     }
 
     /** <p> Generates the evalution of the mobility using Papa's/Wita entropy method </p>  
