@@ -1,6 +1,8 @@
 # JavaChess
 ![Chess Board pic](readmeImages/chessBoardPic.png)
-My attempts at coding up a working Chess GUI and AI.
+My attempts at coding up a working Chess GUI and Bot. The chess board representation itself is working fairly well with all the perft results passing although after some attempts to get the move generation for the Bot I think will need to use a faster language or implement bitboards. 
+
+
 My motivations for such a project was to get used to bit operators which I haven't gotten familar but have seen in some of my uni projects, also that I wanted to get some CI running on github as I only have used Gitlabs CI before for uni projects.
 
 Licensed under [MIT](https://github.com/notbeckhamster/JavaChess/blob/main/LICENSE)
@@ -8,7 +10,7 @@ Licensed under [MIT](https://github.com/notbeckhamster/JavaChess/blob/main/LICEN
 
 [Download the latest JAR file](https://nightly.link/notbeckhamster/JavaChess/workflows/ant/main/JavaApp.zip)
 
-Assuming you do have Java Runtime installed (I am using Java 17)
+Assuming you do have Java Runtime installed (I am using Java 19)
 Extract Zip file and ensure you are in the JavaApp folder then run the following: java -jar JavaChess.jar
 
 If that doesn't work navigate to the actions tab and scroll down to artifacts and download the JavaApp artifact and repeat steps above with regards to running the jar file. Or just clone the repo and run the ant cmd with no arguments to run the app (ie ant). 
